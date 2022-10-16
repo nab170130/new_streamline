@@ -1,0 +1,22 @@
+{
+    "gpus": ["cuda:0", "cuda:1", "cuda:2"],
+    "dataset_directory": "/home/shared/data",
+    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
+    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
+    "distil_directory": "../distil",
+    "experiments": [["Office31", "densenet161", 1, "random", 0, "cross_entropy_sgd_rand_flips", "lm_streamline_fl1mi", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 1, "cross_entropy_sgd_rand_flips", "lm_streamline_fl1mi", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 2, "cross_entropy_sgd_rand_flips", "lm_streamline_fl1mi", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 0, "cross_entropy_sgd_rand_flips", "entropy_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 1, "cross_entropy_sgd_rand_flips", "entropy_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 2, "cross_entropy_sgd_rand_flips", "entropy_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 0, "cross_entropy_sgd_rand_flips", "entropy_part_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 1, "cross_entropy_sgd_rand_flips", "entropy_part_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 2, "cross_entropy_sgd_rand_flips", "entropy_part_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 0, "cross_entropy_sgd_rand_flips", "badge_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 1, "cross_entropy_sgd_rand_flips", "badge_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 2, "cross_entropy_sgd_rand_flips", "badge_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 0, "cross_entropy_sgd_rand_flips", "badge_part_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 1, "cross_entropy_sgd_rand_flips", "badge_part_reservoir", 40, 40, 1000, 32, 6, 1],
+                    ["Office31", "densenet161", 1, "random", 2, "cross_entropy_sgd_rand_flips", "badge_part_reservoir", 40, 40, 1000, 32, 6, 1]]
+}

@@ -1,0 +1,22 @@
+{
+    "gpus": ["cuda:0","cuda:1"],
+    "dataset_directory": "/home/shared/data",
+    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
+    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
+    "distil_directory": "../distil",
+    "experiments": [["OrganMNIST", "deepermnistnet", 1, "random", 0, "cross_entropy_sgd", "lm_streamline_fl1mi", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 1, "cross_entropy_sgd", "lm_streamline_fl1mi", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 2, "cross_entropy_sgd", "lm_streamline_fl1mi", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 0, "cross_entropy_sgd", "entropy_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 1, "cross_entropy_sgd", "entropy_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 2, "cross_entropy_sgd", "entropy_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 0, "cross_entropy_sgd", "entropy_part_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 1, "cross_entropy_sgd", "entropy_part_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 2, "cross_entropy_sgd", "entropy_part_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 0, "cross_entropy_sgd", "badge_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 1, "cross_entropy_sgd", "badge_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 2, "cross_entropy_sgd", "badge_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 0, "cross_entropy_sgd", "badge_part_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 1, "cross_entropy_sgd", "badge_part_reservoir", 750, 750, 5000, 64, 6, 1],
+                    ["OrganMNIST", "deepermnistnet", 1, "random", 2, "cross_entropy_sgd", "badge_part_reservoir", 750, 750, 5000, 64, 6, 1]]
+}
