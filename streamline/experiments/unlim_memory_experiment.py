@@ -108,6 +108,18 @@ class UnlimitedMemoryExperiment(Experiment):
             task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
         elif arrival_pattern == "sequential":
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
+        elif arrival_pattern == "rare_beginning":
+            replace_round_idx                       = int(num_rounds * 0.25)
+            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+            task_arrival_pattern[replace_round_idx] = num_tasks - 1
+        elif arrival_pattern == "rare_middle":
+            replace_round_idx                       = int(num_rounds * 0.5)
+            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+            task_arrival_pattern[replace_round_idx] = num_tasks - 1
+        elif arrival_pattern == "rare_end":
+            replace_round_idx                       = int(num_rounds * 0.75)
+            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+            task_arrival_pattern[replace_round_idx] = num_tasks - 1
         else:
             raise ValueError("Unknown arrival pattern")
 
@@ -174,6 +186,10 @@ class UnlimitedMemoryExperiment(Experiment):
             unlabeled_split = new_unlabeled_partitions
             train_unlabeled_split["train"] =        train_split
             train_unlabeled_split["unlabeled"] =    unlabeled_split
+
+            if "streamline" in al_method_name:
+                for task_num, smi_base_fraction in enumerate(al_strategy.smi_base_fractions):
+                    al_params[F"smi_base_fraction_{task_num}"] = smi_base_fraction
 
             # Get a training loop using the (new) training split
             train_callback = UnlimitedMemoryExperimentCallback(train_dataset_name, model_architecture_name, arrival_pattern, run_number, training_loop_name, al_method_name, al_budget, init_task_size, unl_buffer_size, \

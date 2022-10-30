@@ -5,9 +5,5 @@
     "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
     "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
     "distil_directory": "../distil",
-    "metrics": [["Office31", "accuracy", "Office31"],
-                ["Office31", "labeled_instances", "Office31"],
-                ["Office31", "task_presence_0", "Office31"],
-                ["Office31", "task_presence_1", "Office31"],
-                ["Office31", "task_presence_2", "Office31"]]
+    "metrics": [["Office31", "task_identification_accuracy", "Office31"]]
 }

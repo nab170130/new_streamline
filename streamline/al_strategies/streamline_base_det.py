@@ -242,22 +242,19 @@ class StreamlineBaseDetection(Strategy, ABC):
 
         print("Computing semantic segmentation similarity kernel")
 
+        metric = self.args['metric'] if 'metric' in self.args else 'rbf'
+
         n, d = n_d_features.shape
 
-        # Normalize each of the N feature vectors. To do so, we compute each's norm, broadcast the N norms to a 
-        # compatible shape, and do elementwise division. Zero-vectors have zero norm, so to avoid division errors, we set
-        # such norms to 1 (which leaves the vector unchanged)
-        per_feature_vector_norm                             = torch.linalg.norm(n_d_features, dim=-1)[:,None]
-        per_feature_vector_norm[per_feature_vector_norm==0] = 1.
-        normalized_feature_tensor                           = n_d_features / per_feature_vector_norm
+        # Generate pairwise distances based on the embedding type. Here, we also attempt to normalize the distances to some degree
+        # so that most similarity values in the kernel do not vanish (e^-20, for example, may as well be 0).
+        pairwise_distances      = torch.cdist(n_d_features.to(self.device), n_d_features.to(self.device))
+        rbf_sig                 = torch.max(pairwise_distances) / 4     # Div by 4 so that the max distance has z-score of 4.
+        pw_square_distances     = torch.pow(pairwise_distances, 2)
+        norm_pw_sq_distances    = pw_square_distances / (2. * rbf_sig * rbf_sig)
+        full_sijs               = torch.exp(-norm_pw_sq_distances)
 
-        # Now, computing the similarity kernel simply is a matrix product between the normalized features
-        # and their transpose.
-        image_image_similarity_kernel = torch.matmul(normalized_feature_tensor, normalized_feature_tensor.T)
-
-        # Lastly, since the values of the computed kernel could be between -1 and 1, do a simple fix to ensure those ranges are between 0 and 1.
-        non_negative_image_image_similarity_kernel = (image_image_similarity_kernel + 1.) / 2.
-        return non_negative_image_image_similarity_kernel
+        return full_sijs
 
 
     def compute_obj_det_similarity_kernel(self, n_k_d_features):

@@ -5,6 +5,7 @@ from torchvision import transforms
 import numpy as np
 
 from .bdd100k import BDD100K
+from .iwildcam import IWildCam
 from .office_31 import Office31
 from .organ_mnist import OrganMNIST
 from .perm_mnist import PermutedMNIST
@@ -43,6 +44,12 @@ class DatasetFactory:
             full_train_dataset = Office31(self.root_directory, train=True)
             nclasses = 31
 
+        elif dataset_name == "IWildCam":
+
+            test_transform = transforms.Compose([transforms.Resize((224,224)), transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+            full_train_dataset = IWildCam(self.root_directory, train=True)
+            nclasses = 182
+
         elif dataset_name == "BDD100K":
 
             # To get the test transform, we simply load the config and get its test pipeline
@@ -78,6 +85,10 @@ class DatasetFactory:
         elif dataset_name == "Office31":
 
             full_train_dataset = Office31(self.root_directory, train=True)
+
+        elif dataset_name == "IWildCam":
+
+            full_train_dataset = IWildCam(self.root_directory, train=True)
 
         elif dataset_name == "BDD100K":
 
@@ -123,6 +134,12 @@ class DatasetFactory:
             test_transform = transforms.Compose([transforms.Resize(224), transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
             test_dataset = Office31(self.root_directory, train=False, transform=test_transform)
             nclasses = 31
+
+        elif dataset_name == "IWildCam":
+
+            test_transform = transforms.Compose([transforms.Resize((224,224)), transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+            test_dataset = IWildCam(self.root_directory, train=False, transform=test_transform)
+            nclasses = 182
 
         elif dataset_name == "BDD100K":
 

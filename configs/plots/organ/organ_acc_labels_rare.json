@@ -1,0 +1,19 @@
+{
+    "db_loc": "zdeleteme/streamline_db.db",
+    "name": "organ_acc_labels_rare_beginning",
+    "type": "one_plot",
+    "figsize": [10, 8],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "x_axis_measure":   "al_round",
+    "y_axis_measure":   "accuracy",
+    "train_dataset": "OrganMNIST",
+    "model_architecture": "resnet18_1c",
+    "limited_mem": 1,
+    "arrival_pattern": "rare_beginning",
+    "max_plot_points": 15,
+    "experiments": [["cross_entropy_sgd", "lm_streamline_fl2mi", 50, 50, 100, "OrganMNIST", [1,0,0]]]
+}

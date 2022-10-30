@@ -60,7 +60,7 @@ def sample_rare_access_chain(num_tasks, num_rounds, rare_task_number = 2):
     found_sequence_with_rare_arrival = False
     while not found_sequence_with_rare_arrival:
         task_arrival_pattern = markov_chain.sample_sequence(num_rounds, initial_start_state)
-        found_sequence_with_rare_arrival = rare_task_number in task_arrival_pattern
+        found_sequence_with_rare_arrival = rare_task_number in task_arrival_pattern[1:]
     
     # Change seed after sampling using current unix time. Modulo to be within 2**32 - 1.
     new_seed = time.time_ns() % 1000000

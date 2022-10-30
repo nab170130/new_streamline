@@ -1,0 +1,22 @@
+{
+    "db_loc": "zdeleteme/streamline_db.db",
+    "name": "organ_acc_labels_seq_res",
+    "type": "one_plot",
+    "figsize": [10, 8],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "x_axis_measure":   "labeled_instances",
+    "y_axis_measure":   "accuracy",
+    "train_dataset": "OrganMNIST",
+    "model_architecture": "deepermnistnet",
+    "limited_mem": 1,
+    "arrival_pattern": "sequential",
+    "max_plot_points": 15,
+    "experiments": [["cross_entropy_sgd", "lm_streamline_fl1mi", 750, 750, 5000, "OrganMNIST", [1,0,0]],
+                    ["cross_entropy_sgd", "entropy_reservoir", 750, 750, 5000, "OrganMNIST", [0,1,0]],
+                    ["cross_entropy_sgd", "badge_reservoir", 750, 750, 5000, "OrganMNIST", [0,0,0]],
+                    ["cross_entropy_sgd", "random_reservoir", 750, 750, 5000, "OrganMNIST", [0,0,1]]]
+}

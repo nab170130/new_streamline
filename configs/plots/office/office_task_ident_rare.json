@@ -1,0 +1,19 @@
+{
+    "db_loc": "zdeleteme/streamline_db.db",
+    "name": "new_office31_task_ident_rare_res",
+    "type": "one_plot",
+    "figsize": [10, 8],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "x_axis_measure":   "al_round",
+    "y_axis_measure":   "task_identification_accuracy",
+    "train_dataset": "Office31",
+    "model_architecture": "densenet161",
+    "limited_mem": 1,
+    "arrival_pattern": "rare_beginning",
+    "max_plot_points": 15,
+    "experiments": [["cross_entropy_sgd_rand_flips", "lm_streamline_fl2mi", 100, 100, 200, "Office31", [1,0,0]]]
+}

@@ -32,7 +32,7 @@ class LimitedMemoryStreamline(StreamlineBase):
 
         # Extract some information for submodlib
         num_unlabeled_instances = len(self.unlabeled_dataset)
-        metric = self.args['metric'] if 'metric' in self.args else 'cosine'
+        metric = self.args['metric'] if 'metric' in self.args else 'rbf'
 
         # Get the regular submodular function from each SMI variant.
         if self.args['smi_function']=='fl1mi' or self.args['smi_function']=='fl2mi':
@@ -47,7 +47,7 @@ class LimitedMemoryStreamline(StreamlineBase):
             obj_func = submodlib.GraphCutFunction(n=obj_sijs.shape[0],
                                                         mode="dense",
                                                         lambdaVal=lambdaVal,
-                                                        sijs=obj_sijs,
+                                                        ggsijs=obj_sijs,
                                                         metric=metric)
             
         elif self.args['smi_function']=='logdetmi':
@@ -71,12 +71,19 @@ class LimitedMemoryStreamline(StreamlineBase):
 
         self.model.eval()
         
-        # Get the similarity kernel, which will be used for task identification and coreset selection
-        # Use the similarity kernel to identify the task
-        full_sijs       = self.calculate_kernel()
-        task_identity   = self.identify_task(full_sijs)
-        obj_sijs        = self.calculate_subkernel(full_sijs, task_identity)
-        optimizer       = self.get_optimizer(obj_sijs)
+        # Get the similarity kernel, which will be used for task identification. RBF is used as a 
+        # similarity measure for task identification while cosine similarity is used for selection.
+        self.args['metric'] = "rbf" 
+        self.args['embedding_type'] = "features"
+        full_sijs           = self.calculate_kernel()
+        task_identity       = self.identify_task(full_sijs)
+
+        # Calculate a subkernel based on the task identity. This is 
+        self.args['metric'] = "cosine"
+        self.args['smi_function'] = "fl2mi"
+        full_sijs           = self.calculate_kernel()
+        obj_sijs            = self.calculate_subkernel(full_sijs, task_identity)
+        optimizer           = self.get_optimizer(obj_sijs)
 
         # Constraints are formed as follows:
         #   1. The number of unlabeled points cannot exceed the budget, so the unlabeled portion has a partition constraint of `budget`.

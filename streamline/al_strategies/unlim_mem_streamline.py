@@ -40,7 +40,7 @@ class UnlimitedMemoryStreamline(StreamlineBase):
         #   1. fl1mi    -> flcg
         #   2. gcmi     -> fccg
         #   3. logdetmi -> logdetcg
-        if(self.args['smi_function']=='fl1mi'):
+        if(self.args['smi_function']=='fl1mi') or (self.args['smi_function']=='fl2mi'):
             obj = submodlib.FacilityLocationConditionalGainFunction(n=data_sijs.shape[0],
                                                                       num_privates=private_private_sijs.shape[0],  
                                                                       data_sijs=data_sijs, 
@@ -79,8 +79,14 @@ class UnlimitedMemoryStreamline(StreamlineBase):
         
         # Get the similarity kernel, which will be used for task identification and coreset selection
         # Use the similarity kernel to identify the task
+        self.args['metric'] = "rbf" 
+        self.args['embedding_type'] = "features"
         full_sijs                                           = self.calculate_kernel()
         task_identity                                       = self.identify_task(full_sijs)
+
+        self.args['metric'] = "cosine"
+        self.args['smi_function'] = "fl2mi"
+        full_sijs                                           = self.calculate_kernel()
         data_sijs, data_private_sijs, private_private_sijs  = self.calculate_subkernels(full_sijs, task_identity)
 
         # Adjust the passed budget to be more fair to those tasks that do not have as many instances.

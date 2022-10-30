@@ -1,0 +1,22 @@
+{
+    "db_loc": "zdeleteme/streamline_db.db",
+    "name": "office31_acc_labels_rare_part_res",
+    "type": "one_plot",
+    "figsize": [10, 8],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "x_axis_measure":   "labeled_instances",
+    "y_axis_measure":   "accuracy",
+    "train_dataset": "Office31",
+    "model_architecture": "densenet161",
+    "limited_mem": 1,
+    "arrival_pattern": "rare",
+    "max_plot_points": 15,
+    "experiments": [["cross_entropy_sgd_rand_flips", "lm_streamline_fl1mi", 40, 40, 1000, "Office31", [1,0,0]],
+                    ["cross_entropy_sgd_rand_flips", "entropy_part_reservoir", 40, 40, 1000, "Office31", [0,1,0]],
+                    ["cross_entropy_sgd_rand_flips", "badge_part_reservoir", 40, 40, 1000, "Office31", [0,0,0]],
+                    ["cross_entropy_sgd_rand_flips", "random_part_reservoir", 40, 40, 1000, "Office31", [0,0,1]]]
+}

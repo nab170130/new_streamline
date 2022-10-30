@@ -1,4 +1,5 @@
 import json
+from os import access
 from streamline.persistence.sql import get_all_rounds_from_run
 from streamline.persistence.utils import get_absolute_paths
 from streamline.utils.markov import sample_random_access_chain, sample_rare_access_chain, sample_sequential_access_chain
@@ -32,6 +33,7 @@ class TaskIdentificationAccuracyMetric(ExperimentMetric):
             # Get all round info associated with this run
             all_al_rounds = get_all_rounds_from_run(self.db_loc, self.dataset_name, self.model_architecture_name, self.limited_mem, self.arrival_pattern, self.run_number, 
                                                     self.training_loop, self.al_method, self.al_budget, self.init_task_size, self.unl_buffer_size)
+            num_rounds = len(all_al_rounds)
 
             # Get the previous round's split location and this round's split location
             split_field_index           = 2
@@ -52,20 +54,33 @@ class TaskIdentificationAccuracyMetric(ExperimentMetric):
             # Compare differences in training splits for each task. If there is a difference, then the current task number is the identified task.
             for task_number, (prev_train_labeled_task_idx, curr_train_labeled_task_idx) in enumerate(zip(prev_train_unlabeled_dataset_split["train"],
                                                                                                        curr_train_unlabeled_dataset_split["train"])):
-                if len(set(curr_train_labeled_task_idx) - set(prev_train_labeled_task_idx)) > 0:
-                    break
+                if set(curr_train_labeled_task_idx) != set(prev_train_labeled_task_idx):
+                    actual_task_identity = task_number
 
             # Sample the access chain corresponding to this run.
             num_tasks = len(curr_train_unlabeled_dataset_split["train"])
-            num_rounds = self.round_num + 1
             if self.arrival_pattern == "random":
-                access_chain = sample_random_access_chain(num_tasks, num_rounds)
+                task_arrival_pattern = sample_random_access_chain(num_tasks, num_rounds)
             elif self.arrival_pattern == "sequential":
-                access_chain = sample_sequential_access_chain(num_tasks, num_rounds)
+                task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
             elif self.arrival_pattern == "rare":
-                access_chain = sample_rare_access_chain(num_tasks, num_rounds)
+                task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
+            elif self.arrival_pattern == "rare_beginning":
+                replace_round_idx                       = int(num_rounds * 0.25)
+                task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+                task_arrival_pattern[replace_round_idx] = num_tasks - 1
+            elif self.arrival_pattern == "rare_middle":
+                replace_round_idx                       = int(num_rounds * 0.5)
+                task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+                task_arrival_pattern[replace_round_idx] = num_tasks - 1
+            elif self.arrival_pattern == "rare_end":
+                replace_round_idx                       = int(num_rounds * 0.75)
+                task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+                task_arrival_pattern[replace_round_idx] = num_tasks - 1
+
+            print("MY CHAIN IS", task_arrival_pattern)
 
             # Finally, compare the identified task to what it should be according to the chain.
-            expected_task_identity = access_chain[self.round_num]
-            self.value = 1. if expected_task_identity == task_number else 0.
+            expected_task_identity = task_arrival_pattern[self.round_num]
+            self.value = 1. if expected_task_identity == actual_task_identity else 0.
             self.time = time.time_ns()
