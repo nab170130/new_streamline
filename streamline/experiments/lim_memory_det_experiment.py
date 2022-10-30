@@ -92,10 +92,22 @@ class LimitedMemoryDetectionExperiment(Experiment):
         num_tasks = len(full_train_dataset.task_idx_partitions)
         if arrival_pattern == "random":
             task_arrival_pattern = sample_random_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "rare":
-            task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
         elif arrival_pattern == "sequential":
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
+        elif arrival_pattern == "rare":
+            task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
+        elif arrival_pattern == "rare_beginning":
+            replace_round_idx                       = int(num_rounds * 0.25)
+            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+            task_arrival_pattern[replace_round_idx] = num_tasks - 1
+        elif arrival_pattern == "rare_middle":
+            replace_round_idx                       = int(num_rounds * 0.5)
+            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+            task_arrival_pattern[replace_round_idx] = num_tasks - 1
+        elif arrival_pattern == "rare_end":
+            replace_round_idx                       = int(num_rounds * 0.75)
+            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
+            task_arrival_pattern[replace_round_idx] = num_tasks - 1
         else:
             raise ValueError("Unknown arrival pattern")
 
@@ -252,7 +264,8 @@ class LimitedMemoryDetectionExperiment(Experiment):
         latest_epoch = -1
         for filename in all_saved_weights:
             if filename.startswith("epoch_"):
-                latest_epoch = max(int(filename[6]), latest_epoch)
+                epoch_num       = int(filename.split("_")[1].split(".pth")[0])
+                latest_epoch    = max(epoch_num, latest_epoch)
 
         for filename in all_saved_weights:
             if filename != "latest.pth" and filename != F"epoch_{latest_epoch}.pth":

@@ -1,12 +1,12 @@
 {
-    "gpus": ["cuda:0"],
+    "gpus": ["cuda:0", "cuda:1", "cuda:2", "cuda:3"],
     "dataset_directory": "/home/shared/data",
-    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
-    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
+    "db_loc": "/home/shared/streamline/obj_det_copy/zdeleteme/streamline_db.db",
+    "base_exp_directory": "/home/shared/streamline/obj_det_copy/zdeleteme/large_objects/",
     "distil_directory": "../distil",
-    "experiments": [["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "lm_streamline_det_fl2mi", 200, 200, 400, 64, 2, 1],
-                    ["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "entropy_det_reservoir", 200, 200, 400, 64, 2, 1],
-                    ["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "margin_det_reservoir", 200, 200, 400, 64, 2, 1],
-                    ["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "least_confidence_det_reservoir", 200, 200, 400, 64, 2, 1],
-                    ["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "random_reservoir", 200, 200, 400, 64, 2, 1]]
+    "experiments": [["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "lm_streamline_det_fl2mi", 100, 50, 400, 64, 8, 1],
+                    ["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "entropy_det_reservoir", 100, 50, 400, 64, 8, 1],
+                    ["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "margin_det_reservoir", 100, 50, 400, 64, 8, 1],
+                    ["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "least_confidence_det_reservoir", 100, 50, 400, 64, 8, 1],
+                    ["BDD100K", "faster_rcnn", 1, "random", 0, "bdd100k_train", "random_reservoir", 100, 50, 400, 64, 8, 1]]
 }

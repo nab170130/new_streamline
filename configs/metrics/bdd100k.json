@@ -1,0 +1,13 @@
+{
+    "gpus": ["cuda:0", "cuda:1", "cuda:2"],
+    "batch_size": 32,
+    "dataset_directory": "/home/shared/data",
+    "db_loc": "/home/shared/streamline/obj_det_copy/streamline/zdeleteme/streamline_db.db",
+    "base_exp_directory": "/home/shared/streamline/obj_det_copy/streamline/zdeleteme/large_objects/",
+    "distil_directory": "../distil",
+    "metrics": [["BDD100K", "mAP", "BDD100K"],
+                ["BDD100K", "labeled_instances", "BDD100K"],
+                ["BDD100K", "task_presence_0", "BDD100K"],
+                ["BDD100K", "task_presence_1", "BDD100K"],
+                ["BDD100K", "task_presence_2", "BDD100K"]]
+}

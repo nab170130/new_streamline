@@ -4,8 +4,8 @@ from ..utils.lazy_greedy_matroid_opt import LazyGreedyMatroidPartitionOptimizer
 
 from distil.active_learning_strategies.strategy import Strategy
 from mmcv import Config
+from mmseg.apis import init_segmentor
 from mmdet.core import bbox2roi
-from mmseg.models import build_segmentor
 from mmseg.datasets import build_dataloader
 
 import submodlib
@@ -49,7 +49,22 @@ class StreamlineBaseDetection(Strategy, ABC):
             query_sijs = full_sijs[:num_unlabeled_instances,current_coreset_start_range:current_coreset_end_range]
             query_query_sijs = full_sijs[current_coreset_start_range:current_coreset_end_range,current_coreset_start_range:current_coreset_end_range]
 
-            if(self.args['smi_function']=='fl1mi'):
+            base_indices = list(range(num_unlabeled_instances))
+            base_indices.extend(range(current_coreset_start_range, current_coreset_end_range))
+            base_sijs = full_sijs[base_indices,:][:, base_indices]
+
+            if(self.args['smi_function']=='fl2mi'):
+                smi_obj = submodlib.FacilityLocationVariantMutualInformationFunction(n=num_unlabeled_instances,
+                                                                      num_queries=len(task_idx_partition), 
+                                                                      query_sijs=query_sijs, 
+                                                                      queryDiversityEta=eta)
+                base_obj = submodlib.FacilityLocationFunction(n=base_sijs.shape[0],
+                                                                mode="dense",
+                                                                separate_rep=False,
+                                                                sijs=base_sijs,
+                                                                metric=metric)
+
+            elif(self.args['smi_function']=='fl1mi'):
                 smi_obj = submodlib.FacilityLocationMutualInformationFunction(n=num_unlabeled_instances,
                                                                       num_queries=len(task_idx_partition), 
                                                                       data_sijs=data_sijs, 
@@ -92,13 +107,15 @@ class StreamlineBaseDetection(Strategy, ABC):
             # Note that the submodular mutual information between two sets is always less than the base objective value
             # of each set (for monotonic functions).
             submodular_mutual_information_objective_value   = smi_obj.evaluate(set(range(len(self.unlabeled_dataset))))
-            base_objective_value                            = base_obj.evaluate(set(range(current_coreset_start_range, current_coreset_end_range)))
+            base_objective_value                            = base_obj.evaluate(set(range(num_unlabeled_instances, num_unlabeled_instances + len(task_idx_partition))))
+
+            print(F"SUBMOD {submodular_mutual_information_objective_value} BASE {base_objective_value} ACTUAL TASK {self.unlabeled_dataset.get_task_number_and_index_in_task(0)[0]}")
 
             # Update the range for the next iteration
             current_coreset_start_range = current_coreset_end_range
 
             # Store the objective values
-            smi_base_fractions.append(submodular_mutual_information_objective_value / base_objective_value)
+            smi_base_fractions.append(submodular_mutual_information_objective_value)#base_objective_value)
         
         # Determine which SMI-base fraction was the highest. We predict that the coreset with the highest fraction gives the task identity
         task_identity = None
@@ -108,12 +125,14 @@ class StreamlineBaseDetection(Strategy, ABC):
                 max_task_fraction = smi_base_fraction
                 task_identity = task_idx
 
+        print("I choose", task_identity, max_task_fraction)
+
         return task_identity
 
 
     def compute_sem_seg_features(self, dataset):
 
-        dataloader = build_dataloader(dataset, self.cfg["data"]["samples_per_gpu"], self.cfg["data"]["workers_per_gpu"], 
+        dataloader  = build_dataloader(dataset, self.cfg["data"]["samples_per_gpu"], self.cfg["data"]["workers_per_gpu"], 
                                         num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"])
 
         # This method uses a pre-trained semantic segmentor to extract features at the image level.
@@ -121,10 +140,8 @@ class StreamlineBaseDetection(Strategy, ABC):
         # induced by the backbone of the segmentor should be well-separated by scene information.
         # First, get the pre-trained segmentor via mmsegmentation
         psp_config_path         = "streamline/utils/mmseg_configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py"
-        psp_config              = Config.fromfile(psp_config_path)
-        model                   = build_segmentor(psp_config.model, train_cfg=psp_config.get('train_cfg'), test_cfg=psp_config.get('test_cfg'))
-        model.init_weights()
-        model                   = model.to(self.args["device"])
+        psp_pretrained_path     = "streamline/utils/mmseg_configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth"
+        model                   = init_segmentor(psp_config_path, psp_pretrained_path, device=self.args["device"])
         model.eval()
         
         # Use the model's backbone (and possibly a neck) to extract features from each image.
@@ -133,21 +150,22 @@ class StreamlineBaseDetection(Strategy, ABC):
             start_idx = 0
             for loaded_batch in dataloader:
                 end_idx = start_idx + loaded_batch['img'].data[0].shape[0]
+
+                # Do the model's forward pass util the last prediction layer.
                 batch_features = model.backbone(loaded_batch['img'].data[0].to(self.args["device"])) # post-aug collated batch tensor is in ['img'][0]
-                if model.with_neck:
-                    batch_features = model.neck(batch_features)
-                
+                batch_features = model.decode_head(batch_features)
+
                 # Batch features returns a 4-tuple of embeddings. We use the last embedding to get features. However, 
                 # these feature embeddings are quite large (2048 x 72 x 128), so we opt to reduce these by taking a
                 # max pool to reduce the spatial extent and to take an average over each channel to reduce the size
                 # to 2304-dimensional embeddings
-                max_pool_batch_features                 = torch.nn.functional.max_pool2d(batch_features[-1], kernel_size=2, stride=2, padding=0, dilation=1)
-                single_channel_max_pool_batch_features  = torch.mean(max_pool_batch_features, dim=1).flatten(1)
+                max_pool_batch_features                 = torch.nn.functional.max_pool2d(batch_features, kernel_size=16, stride=16, padding=0, dilation=1)
+                single_channel_max_pool_batch_features  = torch.flatten(max_pool_batch_features, 1)
                 if extracted_semantic_seg_features is None:
                     extracted_semantic_seg_features = torch.zeros(len(dataset), single_channel_max_pool_batch_features.shape[1])
                 extracted_semantic_seg_features[start_idx:end_idx] = single_channel_max_pool_batch_features
                 start_idx = end_idx
-        
+
         return extracted_semantic_seg_features
 
     

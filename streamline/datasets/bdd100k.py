@@ -1,4 +1,5 @@
 import json
+from multiprocessing.sharedctypes import Value
 import time
 import numpy as np
 import os
@@ -63,27 +64,26 @@ class BDD100K(Dataset):
         # Before this is done, we first get an attribute dictionary that assigns each index to a particular attribute value
         attribute_tuple_to_idx_dict = self._create_per_attr_idx(base_dataset)
 
-        task_attribute_tuples = [("clear", "city street", "daytime"),
-                                 ("clear", "city street", "night"),
-                                 ("rainy", "city street", "daytime"),
-                                 ("rainy", "city street", "night")]
+        task_attribute_tuples = [("highway", "daytime"),
+                                 ("highway", "night"),
+                                 ("residential", "daytime"),
+                                 ("residential", "night")]
         
         # Form each task partition idx by finding the intersection across each attribute value. This will be the behind-the-scenes
         # mapping used for the BDD100k base dataset given here.
         bdd100k_base_mapping_partitions = []
         task_idx_partitions = []
         start_idx = 0
-        for weather_attr, scene_attr, time_attr in task_attribute_tuples:    
-            all_matching_weather_idx    = set(attribute_tuple_to_idx_dict["weather"][weather_attr])
-            all_matching_scene_idx      = set(attribute_tuple_to_idx_dict["scene"][scene_attr])
+        for scene_attr, time_attr in task_attribute_tuples:    
             all_matching_time_idx       = set(attribute_tuple_to_idx_dict["timeofday"][time_attr])
-            intersection_idx            = list(set.intersection(all_matching_weather_idx, all_matching_scene_idx, all_matching_time_idx))    
+            all_matching_scene_idx      = set(attribute_tuple_to_idx_dict["scene"][scene_attr])
+            intersection_idx            = list(set.intersection(all_matching_time_idx, all_matching_scene_idx))    
             end_idx                     = start_idx + len(intersection_idx)
             bdd100k_base_mapping_partitions.append(intersection_idx)
             task_idx_partition = list(range(start_idx, end_idx))
             task_idx_partitions.append(task_idx_partition)
             start_idx = end_idx
-    
+
         # If this is the test set, we need to ensure balance across tasks.
         if not train:
             torch.manual_seed(40)

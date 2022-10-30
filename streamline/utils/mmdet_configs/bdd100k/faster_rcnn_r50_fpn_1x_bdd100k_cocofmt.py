@@ -62,8 +62,8 @@ data = dict(
         img_prefix='/home/shared/data/bdd_100k/bdd100k/images/100k/val',
         pipeline=test_pipeline,
         classes=CLASSES))
-evaluation = dict(interval=5, metric='bbox')
-checkpoint_config = dict(interval=5)
+evaluation = dict(interval=50, metric='bbox')
+checkpoint_config = dict(interval=10)
 
 # optimizer
 optimizer = dict(type='SGD', lr=0.001, momentum=0.9, weight_decay=0.0005)
@@ -73,4 +73,4 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(policy='step', step=[3])
 # runtime settings
 runner = dict(
-    type='EpochBasedRunner', max_epochs=5)  # actual epoch = 4 * 3 = 12
+    type='EpochBasedRunner', max_epochs=50)  # actual epoch = 4 * 3 = 12
