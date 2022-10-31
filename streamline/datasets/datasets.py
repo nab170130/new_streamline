@@ -72,26 +72,32 @@ class DatasetFactory:
         
         if dataset_name == "RotatedMNIST":
 
+            redundancy_factor = 1
             full_train_dataset = RotatedMNIST(self.root_directory, train=True, num_tasks=5)
 
         elif dataset_name == "OrganMNIST":
 
+            redundancy_factor = 1
             full_train_dataset = OrganMNIST(self.root_directory, train=True)
 
         elif dataset_name == "PermutedMNIST":
 
+            redundancy_factor = 1
             full_train_dataset = PermutedMNIST(self.root_directory, train=True, num_tasks=5)
 
         elif dataset_name == "Office31":
 
+            redundancy_factor = 1
             full_train_dataset = Office31(self.root_directory, train=True)
 
         elif dataset_name == "IWildCam":
 
+            redundancy_factor = 1
             full_train_dataset = IWildCam(self.root_directory, train=True)
 
         elif dataset_name == "BDD100K":
 
+            redundancy_factor = 2
             full_train_dataset  = BDD100K(self.root_directory, train=True)
 
         else:
@@ -101,7 +107,8 @@ class DatasetFactory:
         initial_training_split_idx_partitions = []
         initial_unlabeled_split_idx_partitions = []
         for task_idx_partition in full_train_dataset.task_idx_partitions:
-            training_task_idx_partition = np.random.choice(task_idx_partition, size=per_task_initial_size, replace=False).tolist()
+            training_task_idx_partition = np.random.choice(task_idx_partition, size=per_task_initial_size // redundancy_factor, replace=False).tolist()
+            training_task_idx_partition = training_task_idx_partition * redundancy_factor
             unlabeled_task_idx_partition = list(set(task_idx_partition) - set(training_task_idx_partition))
             initial_training_split_idx_partitions.append(training_task_idx_partition)
             initial_unlabeled_split_idx_partitions.append(unlabeled_task_idx_partition)

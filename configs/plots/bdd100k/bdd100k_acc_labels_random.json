@@ -1,0 +1,23 @@
+{
+    "db_loc": "zdeleteme/streamline_db.db",
+    "name": "bdd100k_acc_label_random",
+    "type": "one_plot",
+    "figsize": [10, 8],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "x_axis_measure":   "labeled_instances",
+    "y_axis_measure":   "mAP",
+    "train_dataset": "BDD100K",
+    "model_architecture": "faster_rcnn",
+    "limited_mem": 1,
+    "arrival_pattern": "rare_beginning",
+    "max_plot_points": 8,
+    "experiments": [["bdd100k_train", "lm_streamline_det_fl2mi", 100, 50, 400, "BDD100K", [1,0,0]],
+                    ["bdd100k_train", "random_reservoir", 100, 50, 400, "BDD100K", [0,1,0]],
+                    ["bdd100k_train", "least_confidence_det_reservoir", 100, 50, 400, "BDD100K", [0,1,1]],
+                    ["bdd100k_train", "entropy_det_reservoir", 100, 50, 400, "BDD100K", [0,0,1]],
+                    ["bdd100k_train", "margin_det_reservoir", 100, 50, 400, "BDD100K", [0,0,0]]]
+}

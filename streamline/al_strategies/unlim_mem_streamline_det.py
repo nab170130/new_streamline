@@ -41,14 +41,14 @@ class UnlimitedMemoryStreamlineDetection(StreamlineBaseDetection):
         #   1. fl1mi    -> flcg
         #   2. gcmi     -> fccg
         #   3. logdetmi -> logdetcg
-        if(self.args['smi_function']=='fl1mi'):
+        if(self.args['obj_function']=='flcg'):
             obj = submodlib.FacilityLocationConditionalGainFunction(n=data_sijs.shape[0],
                                                                       num_privates=private_private_sijs.shape[0],  
                                                                       data_sijs=data_sijs, 
                                                                       private_sijs=data_private_sijs, 
                                                                       privacyHardness=nu)
         
-        if(self.args['smi_function']=='gcmi'):
+        if(self.args['obj_function']=='gccg'):
             lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 1
             obj = submodlib.GraphCutConditionalGainFunction(n=data_sijs.shape[0],
                                                                       num_privates=private_private_sijs.shape[0],
@@ -57,7 +57,7 @@ class UnlimitedMemoryStreamlineDetection(StreamlineBaseDetection):
                                                                       private_sijs=data_private_sijs, 
                                                                       privacyHardness=nu)
         
-        if(self.args['smi_function']=='logdetmi'):
+        if(self.args['obj_function']=='logdetcg'):
             lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 1
             obj = submodlib.LogDeterminantConditionalGainFunction(n=data_sijs.shape[0],
                                                                       num_privates=private_private_sijs.shape[0],
