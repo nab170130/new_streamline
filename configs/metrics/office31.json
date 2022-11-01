@@ -1,9 +1,0 @@
-{
-    "gpus": ["cuda:0", "cuda:1", "cuda:2"],
-    "batch_size": 32,
-    "dataset_directory": "/home/shared/data",
-    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
-    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
-    "distil_directory": "../distil",
-    "metrics": [["Office31", "task_identification_accuracy", "Office31"]]
-}

@@ -90,24 +90,11 @@ class LimitedMemoryDetectionExperiment(Experiment):
 
         # Get the task arrival pattern sequence information
         num_tasks = len(full_train_dataset.task_idx_partitions)
-        if arrival_pattern == "random":
-            task_arrival_pattern = sample_random_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "sequential":
+        if arrival_pattern == "sequential":
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "rare":
-            task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
         elif arrival_pattern == "rare_beginning":
-            replace_round_idx                       = int(num_rounds * 0.25)
-            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[replace_round_idx] = num_tasks - 1
-        elif arrival_pattern == "rare_middle":
-            replace_round_idx                       = int(num_rounds * 0.5)
-            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[replace_round_idx] = num_tasks - 1
-        elif arrival_pattern == "rare_end":
-            replace_round_idx                       = int(num_rounds * 0.75)
-            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[replace_round_idx] = num_tasks - 1
+            task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
+            task_arrival_pattern[1] = num_tasks - 1
         else:
             raise ValueError("Unknown arrival pattern")
 
@@ -120,14 +107,16 @@ class LimitedMemoryDetectionExperiment(Experiment):
             if self.round_number >= num_rounds:
                 return
 
-            train_split_partitions = train_unlabeled_split["train"]
-            unlabeled_split_partitions = train_unlabeled_split["unlabeled"]
+            train_split_partitions      = train_unlabeled_split["train"]
+            unlabeled_split_partitions  = train_unlabeled_split["unlabeled"]
 
             # Before creating the unlabeled dataset, we need to sample randomly from the unlabeled partition corresponding to the task
-            # arrival pattern.
+            # arrival pattern. SET REDUNDANCY FACTOR TO MATCH IN datasets/datasets.py
+            redundancy_factor = 2   # SET TO MATCH
             arriving_task = task_arrival_pattern[self.round_number]
             unlabeled_buffer_size = min(len(unlabeled_split_partitions[arriving_task]), unl_buffer_size)
-            randomly_chosen_task_unlabeled_idx = np.random.choice(unlabeled_split_partitions[arriving_task], size=unlabeled_buffer_size, replace=False).tolist()
+            randomly_chosen_task_unlabeled_idx = np.random.choice(unlabeled_split_partitions[arriving_task], size=unlabeled_buffer_size // redundancy_factor, replace=False).tolist()
+            randomly_chosen_task_unlabeled_idx = randomly_chosen_task_unlabeled_idx * redundancy_factor
             round_unlabeled_task_idx_partitions = [[] for x in range(num_tasks)]
             round_unlabeled_task_idx_partitions[arriving_task] = randomly_chosen_task_unlabeled_idx
 

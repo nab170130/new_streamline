@@ -1,6 +1,6 @@
 {
     "db_loc": "zdeleteme/streamline_db.db",
-    "name": "iwildcam_acc_label_rare_beg",
+    "name": "iwildcam_acc_label_sequential",
     "type": "one_plot",
     "figsize": [10, 8],
     "font":             "sans_serif",
@@ -13,7 +13,7 @@
     "train_dataset": "IWildCam",
     "model_architecture": "densenet161",
     "limited_mem": 1,
-    "arrival_pattern": "rare_beginning",
+    "arrival_pattern": "sequential",
     "max_plot_points": 15,
     "experiments": [["cross_entropy_sgd_rand_flips", "lm_streamline_fl2mi_rbf_fl_cosine", 1000, 1000, 2000, "IWildCam", [1,0,0]],
                     ["cross_entropy_sgd_rand_flips", "random_reservoir", 1000, 1000, 2000, "IWildCam", [0,0,0]],

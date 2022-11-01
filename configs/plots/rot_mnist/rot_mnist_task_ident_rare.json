@@ -1,6 +1,6 @@
 {
     "db_loc": "zdeleteme/streamline_db.db",
-    "name": "organ_acc_labels_rare_beginning",
+    "name": "rot_mnist_task_ident_rare_beg",
     "type": "one_plot",
     "figsize": [10, 8],
     "font":             "sans_serif",
@@ -9,11 +9,11 @@
     "y_axis_font_size": 20,
     "legend_font_size": 10,
     "x_axis_measure":   "al_round",
-    "y_axis_measure":   "accuracy",
-    "train_dataset": "OrganMNIST",
-    "model_architecture": "resnet18_1c",
+    "y_axis_measure":   "task_identification_accuracy",
+    "train_dataset": "RotatedMNIST",
+    "model_architecture": "mnistnet",
     "limited_mem": 1,
     "arrival_pattern": "rare_beginning",
     "max_plot_points": 15,
-    "experiments": [["cross_entropy_sgd", "lm_streamline_fl2mi", 50, 50, 100, "OrganMNIST", [1,0,0]]]
+    "experiments": [["cross_entropy_sgd", "lm_streamline_fl2mi_rbf_fl_cosine", 100, 100, 500, "RotatedMNIST", [1,0,0]]]
 }

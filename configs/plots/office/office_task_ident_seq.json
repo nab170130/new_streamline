@@ -1,6 +1,6 @@
 {
     "db_loc": "zdeleteme/streamline_db.db",
-    "name": "new_office31_task_ident_seq_res",
+    "name": "office31_task_ident_rare_seq",
     "type": "one_plot",
     "figsize": [10, 8],
     "font":             "sans_serif",
@@ -15,5 +15,5 @@
     "limited_mem": 1,
     "arrival_pattern": "sequential",
     "max_plot_points": 15,
-    "experiments": [["cross_entropy_sgd_rand_flips", "lm_streamline_fl1mi", 40, 40, 1000, "Office31", [1,0,0]]]
+    "experiments": [["cross_entropy_sgd_rand_flips", "lm_streamline_fl2mi_rbf_fl_cosine", 100, 100, 200, "Office31", [1,0,0]]]
 }

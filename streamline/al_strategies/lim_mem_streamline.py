@@ -28,11 +28,10 @@ class LimitedMemoryStreamline(StreamlineBase):
         return obj_sijs
 
 
-    def get_optimizer(self, obj_sijs):
+    def get_optimizer(self, obj_sijs, metric='rbf'):
 
         # Extract some information for submodlib
         num_unlabeled_instances = len(self.unlabeled_dataset)
-        metric = self.args['metric'] if 'metric' in self.args else 'rbf'
 
         # Get the regular submodular function from each SMI variant.
         if self.args['obj_function']=='fl':
@@ -73,16 +72,14 @@ class LimitedMemoryStreamline(StreamlineBase):
         
         # Get the similarity kernel, which will be used for task identification. RBF is used as a 
         # similarity measure for task identification while cosine similarity is used for selection.
-        self.args['metric'] = "rbf" 
         self.args['embedding_type'] = "features"
-        full_sijs           = self.calculate_kernel()
-        task_identity       = self.identify_task(full_sijs)
+        full_sijs           = self.calculate_kernel(self.args['identification_metric'])
+        task_identity       = self.identify_task(full_sijs, self.args['identification_metric'])
 
-        # Calculate a subkernel based on the task identity. This is 
-        self.args['metric'] = "cosine"
-        full_sijs           = self.calculate_kernel()
+        # Calculate a subkernel based on the task identity.
+        full_sijs           = self.calculate_kernel(self.args['selection_metric'])
         obj_sijs            = self.calculate_subkernel(full_sijs, task_identity)
-        optimizer           = self.get_optimizer(obj_sijs)
+        optimizer           = self.get_optimizer(obj_sijs, self.args['selection_metric'])
 
         # Constraints are formed as follows:
         #   1. The number of unlabeled points cannot exceed the budget, so the unlabeled portion has a partition constraint of `budget`.

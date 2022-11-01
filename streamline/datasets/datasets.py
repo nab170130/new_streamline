@@ -97,6 +97,7 @@ class DatasetFactory:
 
         elif dataset_name == "BDD100K":
 
+            # SET TO MATCH IN lim_memory_det_experiment.py
             redundancy_factor = 2
             full_train_dataset  = BDD100K(self.root_directory, train=True)
 

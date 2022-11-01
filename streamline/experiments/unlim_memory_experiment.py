@@ -102,24 +102,11 @@ class UnlimitedMemoryExperiment(Experiment):
 
         # Get the task arrival pattern sequence information
         num_tasks = len(full_train_dataset.task_idx_partitions)
-        if arrival_pattern == "random":
-            task_arrival_pattern = sample_random_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "rare":
-            task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "sequential":
+        if arrival_pattern == "sequential":
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
         elif arrival_pattern == "rare_beginning":
-            replace_round_idx                       = int(num_rounds * 0.25)
-            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[replace_round_idx] = num_tasks - 1
-        elif arrival_pattern == "rare_middle":
-            replace_round_idx                       = int(num_rounds * 0.5)
-            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[replace_round_idx] = num_tasks - 1
-        elif arrival_pattern == "rare_end":
-            replace_round_idx                       = int(num_rounds * 0.75)
-            task_arrival_pattern                    = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[replace_round_idx] = num_tasks - 1
+            task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
+            task_arrival_pattern[1] = num_tasks - 1
         else:
             raise ValueError("Unknown arrival pattern")
 

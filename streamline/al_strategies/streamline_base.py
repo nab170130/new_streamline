@@ -16,7 +16,7 @@ class StreamlineBase(Strategy, ABC):
         self.num_tasks = len(labeled_dataset.task_idx_partitions)
     
 
-    def identify_task(self, full_sijs):
+    def identify_task(self, full_sijs, metric='rbf'):
 
         # If we should be finding oracle task identity, do so and return instead of this.
         if self.args["oracle_task_identity"]:
@@ -26,11 +26,6 @@ class StreamlineBase(Strategy, ABC):
         # Extract some information for submodlib and for taking subkernels
         num_unlabeled_instances = len(self.unlabeled_dataset)
         eta = self.args['eta'] if 'eta' in self.args else 1
-        metric = self.args['metric'] if 'metric' in self.args else 'rbf'
-
-        import numpy as np
-        print(F"HIGHEST SIM {np.max(full_sijs)} LOWEST SIM {np.min(full_sijs)} AVG SIM {np.mean(full_sijs)} MED SIM {np.median(full_sijs)}")
-        print(F"HISTO: {np.histogram(full_sijs, bins=20)}")
 
         # The first such view: Take only the pairwise similarities of those points in the unlabeled dataset
         data_sijs = full_sijs[:num_unlabeled_instances,:num_unlabeled_instances]
@@ -118,10 +113,9 @@ class StreamlineBase(Strategy, ABC):
         return task_identity
 
 
-    def calculate_kernel(self):
+    def calculate_kernel(self, metric='rbf'):
 
         # Get hyperparameters from args dict
-        metric = self.args['metric'] if 'metric' in self.args else 'rbf'
         gradType = self.args['gradType'] if 'gradType' in self.args else "bias_linear"
         embedding_type = self.args['embedding_type'] if 'embedding_type' in self.args else "features"
         if(embedding_type=="features"):

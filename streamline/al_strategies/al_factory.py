@@ -55,20 +55,28 @@ class ALFactory:
                 self.al_params["oracle_task_identity"] = False
         elif al_name.startswith("lm_streamline"):
             strategy_class = LimitedMemoryStreamline
-            smi_function = al_name.split("_")[2]
-            obj_function = al_name.split("_")[3]
-            self.al_params["smi_function"] = smi_function
-            self.al_params["obj_function"] = obj_function
+            smi_function            = al_name.split("_")[2]
+            identification_metric   = al_name.split("_")[3]
+            obj_function            = al_name.split("_")[4]
+            selection_metric        = al_name.split("_")[5]
+            self.al_params["smi_function"]          = smi_function
+            self.al_params["identification_metric"] = identification_metric
+            self.al_params["obj_function"]          = obj_function
+            self.al_params["selection_metric"]      = selection_metric
             if "oracle" in al_name:
                 self.al_params["oracle_task_identity"] = True
             else:
                 self.al_params["oracle_task_identity"] = False
         elif al_name.startswith("ulm_streamline"):
             strategy_class = UnlimitedMemoryStreamline
-            smi_function = al_name.split("_")[2]
-            obj_function = al_name.split("_")[3]
-            self.al_params["smi_function"] = smi_function
-            self.al_params["obj_function"] = obj_function
+            smi_function            = al_name.split("_")[2]
+            identification_metric   = al_name.split("_")[3]
+            obj_function            = al_name.split("_")[4]
+            selection_metric        = al_name.split("_")[5]
+            self.al_params["smi_function"]          = smi_function
+            self.al_params["identification_metric"] = identification_metric
+            self.al_params["obj_function"]          = obj_function
+            self.al_params["selection_metric"]      = selection_metric
             if "oracle" in al_name:
                 self.al_params["oracle_task_identity"] = True
             else:

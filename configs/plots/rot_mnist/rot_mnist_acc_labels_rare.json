@@ -1,6 +1,6 @@
 {
     "db_loc": "zdeleteme/streamline_db.db",
-    "name": "rot_mnist_acc_labels",
+    "name": "rot_mnist_acc_labels_rare_beg",
     "type": "one_plot",
     "figsize": [10, 8],
     "font":             "sans_serif",
@@ -8,14 +8,15 @@
     "x_axis_font_size": 20,
     "y_axis_font_size": 20,
     "legend_font_size": 10,
-    "x_axis_measure":   "al_round",
+    "x_axis_measure":   "labeled_instances",
     "y_axis_measure":   "accuracy",
     "train_dataset": "RotatedMNIST",
     "model_architecture": "mnistnet",
     "limited_mem": 1,
     "arrival_pattern": "rare_beginning",
     "max_plot_points": 15,
-    "experiments": [["cross_entropy_sgd", "lm_streamline_fl2mi", 100, 100, 500, "RotatedMNIST", [1,0,0]],
+    "experiments": [["cross_entropy_sgd", "lm_streamline_fl2mi_rbf_fl_cosine", 100, 100, 500, "RotatedMNIST", [1,0,0]],
                     ["cross_entropy_sgd", "entropy_reservoir", 100, 100, 500, "RotatedMNIST", [0,1,0]],
-                    ["cross_entropy_sgd", "badge_reservoir", 100, 100, 500, "RotatedMNIST", [0,0,1]]]
+                    ["cross_entropy_sgd", "badge_reservoir", 100, 100, 500, "RotatedMNIST", [0,0,1]],
+                    ["cross_entropy_sgd", "random_reservoir", 100, 100, 500, "RotatedMNIST", [0,0,0]]]
 }
