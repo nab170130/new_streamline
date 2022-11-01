@@ -52,7 +52,6 @@ class LimitedMemoryStreamlineDetection(StreamlineBaseDetection):
             lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 1
             obj_func = submodlib.LogDeterminantFunction(n=obj_sijs.shape[0],
                                                             mode="dense",
-                                                            separate_rep=False,
                                                             lambdaVal=lambdaVal,
                                                             sijs=obj_sijs,
                                                             metric=metric)

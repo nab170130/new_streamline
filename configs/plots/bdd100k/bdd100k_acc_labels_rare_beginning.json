@@ -15,7 +15,7 @@
     "limited_mem": 1,
     "arrival_pattern": "rare_beginning",
     "max_plot_points": 8,
-    "experiments": [["bdd100k_train", "lm_streamline_det_fl2mi", 100, 50, 400, "BDD100K", [1,0,0]],
+    "experiments": [["bdd100k_train", "lm_streamline_det_fl2mi_fl", 100, 50, 400, "BDD100K", [1,0,0]],
                     ["bdd100k_train", "random_reservoir", 100, 50, 400, "BDD100K", [0,1,0]],
                     ["bdd100k_train", "least_confidence_det_reservoir", 100, 50, 400, "BDD100K", [0,1,1]],
                     ["bdd100k_train", "entropy_det_reservoir", 100, 50, 400, "BDD100K", [0,0,1]],
