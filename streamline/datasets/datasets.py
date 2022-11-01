@@ -34,7 +34,7 @@ class DatasetFactory:
 
         elif dataset_name == "PermutedMNIST":
 
-            test_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+            test_transform = transforms.Compose([transforms.Normalize((0.1307,), (0.3081,))])
             full_train_dataset = PermutedMNIST(self.root_directory, train=True, num_tasks=5)
             nclasses = 10
 
@@ -133,7 +133,7 @@ class DatasetFactory:
 
         elif dataset_name == "PermutedMNIST":
 
-            test_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+            test_transform = transforms.Compose([transforms.Normalize((0.1307,), (0.3081,))])
             test_dataset = PermutedMNIST(self.root_directory, train=False, num_tasks=5, transform=test_transform)
             nclasses = 10
 
