@@ -295,7 +295,6 @@ def add_metric_time_value_to_run(db_loc, train_dataset_name, model_architecture_
         else:
             time.sleep(1)
             add_metric_time_value_to_run(db_loc, train_dataset_name, model_architecture_name, limited_mem, arrival_pattern, run_number, training_loop, al_method_name, budget, init_task_size, unl_buffer_size, round_num, metric_name, eval_dataset, metric_value, time_value, attempt + 1)
-        raise err
     finally:
         db_connection.close()
 
