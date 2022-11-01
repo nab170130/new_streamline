@@ -8,7 +8,7 @@ from ..training_loops import TrainingLoopFactory
 from ..utils import sample_sequential_access_chain, sample_rare_access_chain, sample_random_access_chain
 
 from mmcv import Config
-from mmdet.apis import init_detector
+from mmcv.runner import load_checkpoint
 
 import json
 import numpy as np
@@ -331,12 +331,16 @@ class LimitedMemoryDetectionExperiment(Experiment):
         full_train_dataset, test_transform, num_classes = dataset_factory.get_dataset(train_dataset_name)
 
         # Get the model. However, if there is a checkpoint we need to be loading from, initialize the model with those weights.
+        pretrain_weight_directory = os.path.join(self.base_exp_directory, "weights")
+        model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory)
+        model = model_factory.get_model(model_architecture_name)
+
         if os.path.exists(abs_latest_chkpt_path):
-            model = init_detector(bdd100k_config, checkpoint=abs_latest_chkpt_path, device=self.gpu_name, cfg_options=None)
-        else:
-            pretrain_weight_directory = os.path.join(self.base_exp_directory, "weights")
-            model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory)
-            model = model_factory.get_model(model_architecture_name)
+            checkpoint      = load_checkpoint(model, abs_latest_chkpt_path, map_location="cpu")
+            model.cfg       = bdd100k_config
+        
+        model.to(self.gpu_name)
+        model.eval()
         
         # Get a training loop using the provided data split
         train_split = train_unlabeled_dataset_split["train"]
