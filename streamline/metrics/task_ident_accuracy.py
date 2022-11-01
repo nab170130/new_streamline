@@ -59,9 +59,9 @@ class TaskIdentificationAccuracyMetric(ExperimentMetric):
 
             # Sample the access chain corresponding to this run.
             num_tasks = len(curr_train_unlabeled_dataset_split["train"])
-            if arrival_pattern == "sequential":
+            if self.arrival_pattern == "sequential":
                 task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
-            elif arrival_pattern == "rare_beginning":
+            elif self.arrival_pattern == "rare_beginning":
                 task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
                 task_arrival_pattern[1] = num_tasks - 1
             else:
