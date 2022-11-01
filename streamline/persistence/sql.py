@@ -254,7 +254,7 @@ def add_al_round(db_loc,
     except sqlite3.OperationalError as err:
 
         # Instead of wasting the attempt in the event of a locked DB, retry adding the AL round. If we've tried enough, though, then stop attempting.
-        if attempt == 5:
+        if attempt == 100:
             raise err
         else:
             time.sleep(1)
@@ -290,7 +290,7 @@ def add_metric_time_value_to_run(db_loc, train_dataset_name, model_architecture_
     except Exception as err:
         
         # Instead of wasting the attempt in the event of a locked DB, retry adding the metric. If we've tried enough, though, then stop attempting.
-        if attempt == 5:
+        if attempt == 100:
             raise err
         else:
             time.sleep(1)
