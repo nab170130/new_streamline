@@ -1,13 +1,10 @@
 {
-    "gpus": ["cuda:0", "cuda:1", "cuda:2", "cuda:3"],
+    "gpus": ["cuda:0", "cuda:1"],
     "dataset_directory": "/home/shared/data",
     "db_loc": "/home/shared/streamline/obj_det_copy/zdeleteme/streamline_db.db",
     "base_exp_directory": "/home/shared/streamline/obj_det_copy/zdeleteme/large_objects/",
     "distil_directory": "../distil",
-    "experiments": [["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "lm_streamline_det_fl2mi_fl", 100, 50, 400, 64, 8, 0],
-                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "lm_streamline_det_fl2mi_logdet", 100, 50, 400, 64, 8, 0],
-                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "entropy_det_reservoir", 100, 50, 400, 64, 8, 0],
-                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "margin_det_reservoir", 100, 50, 400, 64, 8, 0],
-                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "least_confidence_det_reservoir", 100, 50, 400, 64, 8, 0],
-                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "random_reservoir", 100, 50, 400, 64, 8, 0]]
+    "experiments": [["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "lm_streamline_det_fl2mi_fl", 50, 250, 1000, 64, 5, 1],
+                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "lm_streamline_det_fl2mi_logdet", 50, 250, 1000, 64, 5, 1],
+                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "entropy_det", 50, 250, 1000, 64, 5, 1]]
 }

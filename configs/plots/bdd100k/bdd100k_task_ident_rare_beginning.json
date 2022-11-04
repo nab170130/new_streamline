@@ -1,6 +1,6 @@
 {
     "db_loc": "zdeleteme/streamline_db.db",
-    "name": "bdd100k_acc_label_random",
+    "name": "bdd100k_task_ident_rare_beg",
     "type": "one_plot",
     "figsize": [10, 8],
     "font":             "sans_serif",
@@ -15,5 +15,6 @@
     "limited_mem": 1,
     "arrival_pattern": "rare_beginning",
     "max_plot_points": 8,
-    "experiments": [["bdd100k_train", "lm_streamline_det_fl2mi_fl", 100, 50, 400, "BDD100K", [1,0,0]]]
+    "experiments": [["bdd100k_train", "lm_streamline_det_fl2mi_fl", 125, 250, 500, "BDD100K", [1,0,0]],
+                    ["bdd100k_train", "lm_streamline_det_fl2mi_logdet", 125, 250, 500, "BDD100K", [1,1,0]]]
 }
