@@ -56,7 +56,7 @@ class StreamlineBase(Strategy, ABC):
                                                                 separate_rep=False,
                                                                 sijs=base_sijs,
                                                                 metric=metric)
-        
+                norm_factor = query_query_sijs.shape[0] + data_sijs.shape[0]
             elif(self.args['smi_function']=='gcmi'):
                 lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 0.5
                 smi_obj = submodlib.GraphCutMutualInformationFunction(n=num_unlabeled_instances,
@@ -68,7 +68,7 @@ class StreamlineBase(Strategy, ABC):
                                                             lambdaVal=lambdaVal,
                                                             ggsijs=base_sijs,
                                                             metric=metric)
-                
+                norm_factor = query_query_sijs.shape[0] * data_sijs.shape[0]
             elif(self.args['smi_function']=='logdetmi'):
                 lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 1
                 smi_obj = submodlib.LogDeterminantMutualInformationFunction(n=num_unlabeled_instances,
@@ -83,6 +83,7 @@ class StreamlineBase(Strategy, ABC):
                                                                 lambdaVal=lambdaVal,
                                                                 sijs=base_sijs,
                                                                 metric=metric)
+                norm_factor = 1
 
             # Evaluate the smi objective function and the base objective function to get the fraction between the two.
             # Note that the submodular mutual information between two sets is always less than the base objective value
@@ -90,13 +91,13 @@ class StreamlineBase(Strategy, ABC):
             submodular_mutual_information_objective_value   = smi_obj.evaluate(set(range(len(self.unlabeled_dataset))))
             base_objective_value                            = base_obj.evaluate(set(range(num_unlabeled_instances, num_unlabeled_instances + len(task_idx_partition))))
 
-            print(F"SUBMOD {submodular_mutual_information_objective_value} BASE {base_objective_value} ACTUAL TASK {self.unlabeled_dataset.get_task_number_and_index_in_task(0)[0]}")
+            print(F"FRAC {submodular_mutual_information_objective_value / norm_factor} ACTUAL TASK {self.unlabeled_dataset.get_task_number_and_index_in_task(0)[0]}")
 
             # Update the range for the next iteration
             current_coreset_start_range = current_coreset_end_range
 
             # Store the objective values
-            smi_base_fractions.append(submodular_mutual_information_objective_value)#base_objective_value)
+            smi_base_fractions.append(submodular_mutual_information_objective_value / norm_factor)#base_objective_value)
         
         self.smi_base_fractions = smi_base_fractions
 
@@ -146,7 +147,7 @@ class StreamlineBase(Strategy, ABC):
             # Generate pairwise distances based on the embedding type. Here, we also attempt to normalize the distances to some degree
             # so that most similarity values in the kernel do not vanish (e^-20, for example, may as well be 0).
             pairwise_distances      = torch.cdist(full_embedding.to(self.device), full_embedding.to(self.device))
-            rbf_sig                 = torch.max(pairwise_distances) / 4     # Div by 4 so that the max distance has z-score of 4.
+            rbf_sig                 = torch.max(pairwise_distances) / 2     # Div by 4 so that the max distance has z-score of 4.
             pw_square_distances     = torch.pow(pairwise_distances, 2)
             norm_pw_sq_distances    = pw_square_distances / (2. * rbf_sig * rbf_sig)
             full_sijs = rbf_kern    = torch.exp(-norm_pw_sq_distances).cpu().numpy()

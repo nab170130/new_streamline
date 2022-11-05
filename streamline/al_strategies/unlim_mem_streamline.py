@@ -79,12 +79,10 @@ class UnlimitedMemoryStreamline(StreamlineBase):
         
         # Get the similarity kernel, which will be used for task identification and coreset selection
         # Use the similarity kernel to identify the task
-        self.args['metric'] = "rbf" 
         self.args['embedding_type'] = "features"
         full_sijs                                           = self.calculate_kernel()
         task_identity                                       = self.identify_task(full_sijs)
 
-        self.args['metric'] = "cosine"
         full_sijs                                           = self.calculate_kernel()
         data_sijs, data_private_sijs, private_private_sijs  = self.calculate_subkernels(full_sijs, task_identity)
 

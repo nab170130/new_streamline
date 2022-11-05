@@ -106,7 +106,8 @@ class LimitedMemoryExperiment(Experiment):
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
         elif arrival_pattern == "rare_beginning":
             task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[1] = num_tasks - 1
+            task_arrival_pattern[1]     = num_tasks - 1
+            task_arrival_pattern[9]     = num_tasks - 1
         else:
             raise ValueError("Unknown arrival pattern")
 

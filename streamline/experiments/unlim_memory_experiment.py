@@ -106,9 +106,11 @@ class UnlimitedMemoryExperiment(Experiment):
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
         elif arrival_pattern == "rare_beginning":
             task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[1] = num_tasks - 1
+            task_arrival_pattern[1]     = num_tasks - 1
+            task_arrival_pattern[9]     = num_tasks - 1
         else:
             raise ValueError("Unknown arrival pattern")
+        print("TASK PATTERN", task_arrival_pattern)
 
         # If the training loop has non-negative epoch, then the round is not finished. Do not select and proceed to training.
         if round_training_loop.epoch < 0:

@@ -1,8 +1,10 @@
+import time
 from mmcv import Config
 
 from torchvision import transforms
 
 import numpy as np
+import torch
 
 from .bdd100k import BDD100K
 from .iwildcam import IWildCam
@@ -105,6 +107,10 @@ class DatasetFactory:
 
             raise ValueError("Dataset not implemented!")
 
+        # Seed the RNG for generating initial splits so that all runs share the same initial starting point.
+        torch.manual_seed(40)
+        np.random.seed(40)
+
         initial_training_split_idx_partitions = []
         initial_unlabeled_split_idx_partitions = []
         for task_idx_partition in full_train_dataset.task_idx_partitions:
@@ -114,6 +120,11 @@ class DatasetFactory:
             initial_training_split_idx_partitions.append(training_task_idx_partition)
             initial_unlabeled_split_idx_partitions.append(unlabeled_task_idx_partition)
         
+        # Change seed after sampling using current unix time. Modulo to be within 2**32 - 1.
+        new_seed = time.time_ns() % 1000000
+        torch.manual_seed(new_seed)
+        np.random.seed(new_seed)
+
         return initial_training_split_idx_partitions, initial_unlabeled_split_idx_partitions
 
 

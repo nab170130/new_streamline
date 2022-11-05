@@ -1,3 +1,4 @@
+import copy
 from .experiment import Experiment
 from ..al_strategies import ALFactory
 from ..datasets import DatasetFactory, TransformSubsetDetection
@@ -15,12 +16,12 @@ import numpy as np
 import os
 import torch
 
-class LimitedMemoryDetectionExperiment(Experiment):
+class UnlimitedMemoryDetectionExperiment(Experiment):
     
 
     def __init__(self, comm_lock, comm_sem, parent_pipe, gpu_name, base_dataset_directory, base_exp_directory, db_loc):
 
-        super(LimitedMemoryDetectionExperiment, self).__init__(comm_lock, comm_sem, parent_pipe, gpu_name, base_dataset_directory, base_exp_directory, db_loc)
+        super(UnlimitedMemoryDetectionExperiment, self).__init__(comm_lock, comm_sem, parent_pipe, gpu_name, base_dataset_directory, base_exp_directory, db_loc)
         self.round_number = 0
 
 
@@ -34,7 +35,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
         if delete_large_objects_after_run:
 
             # If the large objects are going to be deleted, then calculate each metric before deletion.
-            round_info_list = get_all_rounds_from_run(self.db_loc, train_dataset_name, model_architecture_name, 1, arrival_pattern, run_number,
+            round_info_list = get_all_rounds_from_run(self.db_loc, train_dataset_name, model_architecture_name, 0, arrival_pattern, run_number,
                                                         training_loop_name, al_method_name, al_budget, init_task_size, unl_buffer_size)
 
             # Get the number of tasks for the dataset and all the metrics to compute.
@@ -58,14 +59,14 @@ class LimitedMemoryDetectionExperiment(Experiment):
                 for metric_name in all_metrics_to_compute:
 
                     # Form the round-join-metric tuple
-                    round_join_metric_tuple = (train_dataset_name, model_architecture_name, 1, arrival_pattern, run_number, training_loop_name, al_method_name,
+                    round_join_metric_tuple = (train_dataset_name, model_architecture_name, 0, arrival_pattern, run_number, training_loop_name, al_method_name,
                                                 al_budget, init_task_size, unl_buffer_size, round_id, current_epoch, dataset_split_path, model_weight_path, 
                                                 opt_state_path, lr_state_path, completed_unix_time, metric_name, train_dataset_name, None, None)
                     metric_factory = MetricFactory(self.db_loc, self.base_exp_directory, self.base_dataset_directory, self.gpu_name, batch_size, round_join_metric_tuple)
                     metric_to_compute = metric_factory.get_metric(metric_name)
                     metric_to_compute.evaluate()
 
-                    add_metric_time_value_to_run(self.db_loc, train_dataset_name, model_architecture_name, 1, arrival_pattern, run_number, training_loop_name, 
+                    add_metric_time_value_to_run(self.db_loc, train_dataset_name, model_architecture_name, 0, arrival_pattern, run_number, training_loop_name, 
                                                     al_method_name, al_budget, init_task_size, unl_buffer_size, round_id, metric_name, train_dataset_name, metric_to_compute.value, metric_to_compute.time)
                         
                 exp_name_update = F"MET COMP {train_dataset_name:4s}_{model_architecture_name:4s}_{arrival_pattern:4s}_{run_number:4d}_{training_loop_name:4s}_{al_method_name:4s}_{al_budget:4d}_{init_task_size:4d}_{unl_buffer_size:4d}"
@@ -140,7 +141,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
             al_strategy = al_strategy_factory.get_strategy(al_method_name)
 
             # Do th AL selection. If this is a partition reservoir strategy, pass the task identity (oracle)
-            selected_labeled_idx, selected_unlabeled_idx = al_strategy.select(al_budget)
+            selected_unlabeled_idx = al_strategy.select(al_budget)
 
             # selected_labeled_idx and selected_unlabeled_idx are lists of lists. Each one
             # has num_tasks lists, and the elements in those lists are indices with respect to the
@@ -153,13 +154,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
             # They remain within their newly assigned task (again, which are the same as their old 
             # task unless a task misidentification occurs). This will give us the new splits to use in 
             # training and the subsequent round.
-            new_training_partitions = [[] for x in full_train_dataset.task_idx_partitions]
-            for new_task_number, task_idx_partition_wrpt_labeled in enumerate(selected_labeled_idx):
-                for idx_wrpt_labeled in task_idx_partition_wrpt_labeled:
-                    old_task_number, within_index_partition = train_dataset.get_task_number_and_index_in_task(idx_wrpt_labeled)
-                    full_labeled_idx = train_dataset.task_idx_partitions[old_task_number][within_index_partition]
-                    new_training_partitions[new_task_number].append(full_labeled_idx)
-
+            new_training_partitions = copy.deepcopy(train_split_partitions)
             for new_task_number, task_idx_partition_wrpt_unlabeled in enumerate(selected_unlabeled_idx):
                 for idx_wrpt_unlabeled in task_idx_partition_wrpt_unlabeled:
                     old_task_number, within_index_partition = unlabeled_dataset.get_task_number_and_index_in_task(idx_wrpt_unlabeled)
@@ -174,15 +169,12 @@ class LimitedMemoryDetectionExperiment(Experiment):
 
             train_split = new_training_partitions
             unlabeled_split = new_unlabeled_partitions
-
-            # Ensure al_params now has the new reservoir count(s)
-            if al_method_name.endswith("part_reservoir"):
-                al_params["reservoir_counters"] = al_strategy.reservoir_counters
-            elif al_method_name.endswith("reservoir"):
-                al_params["reservoir_counter"] = al_strategy.reservoir_counter
-
             train_unlabeled_split["train"] =        train_split
             train_unlabeled_split["unlabeled"] =    unlabeled_split
+
+            if "streamline" in al_method_name:
+                for task_num, smi_base_fraction in enumerate(al_strategy.smi_base_fractions):
+                    al_params[F"smi_base_fraction_{task_num}"] = smi_base_fraction
 
             # Get a training loop using the provided data split. Also, get a fresh model.
             train_split = train_unlabeled_split["train"]
@@ -193,7 +185,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
             new_model = model_factory.get_model(model_architecture_name)
 
             # Save the new split.
-            split_path, working_dir, _      = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 1, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
+            split_path, working_dir, _      = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 0, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
             abs_split_path, abs_working_dir = get_absolute_paths_det(self.base_exp_directory, split_path, working_dir)
             atomic_json_save(abs_split_path, train_unlabeled_split)
 
@@ -224,7 +216,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
                       al_method_name, al_budget, init_task_size, unl_buffer_size, round_number, al_params, test_augmentation, metrics):
  
         # Get work directory for mmdetection. Save the split info to the abs path.
-        split_path, working_dir, completion_unix_time   = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 1, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
+        split_path, working_dir, completion_unix_time   = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 0, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
         abs_split_path, abs_working_dir                 = get_absolute_paths_det(self.base_exp_directory, split_path, working_dir)
         atomic_json_save(abs_split_path, train_unlabeled_dataset_split)
 
@@ -246,7 +238,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
         #   4. stop_criteria:       []  (hard-coded in config)
         #   5. opt/lr_state:    ""      (not used / handled by mmdet)
         rel_weight_path = os.path.join(working_dir, "latest.pth")
-        add_al_round(self.db_loc, train_dataset_name, model_architecture_name, 1, arrival_pattern, run_number, training_loop_name, al_method_name, al_budget, init_task_size, unl_buffer_size, round_number,
+        add_al_round(self.db_loc, train_dataset_name, model_architecture_name, 0, arrival_pattern, run_number, training_loop_name, al_method_name, al_budget, init_task_size, unl_buffer_size, round_number,
                      -1, split_path, rel_weight_path, "", "", completion_unix_time, save_al_params, [], [], [], metrics)
 
         # As a last step, remove all the checkpoints in the working folder that aren't the latest.pth file or its symbolic link.
@@ -266,7 +258,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
     def load_al_round(self, train_dataset_name, model_architecture_name, arrival_pattern, run_number, training_loop_name, al_method_name, al_budget, init_task_size, unl_buffer_size, batch_size):
     
         # Get the most recent round info, some fields of which will not be useful in instantiating / resuming the experiment
-        round_info_tuple = get_most_recent_round_info(self.db_loc, train_dataset_name, model_architecture_name, 1, arrival_pattern,
+        round_info_tuple = get_most_recent_round_info(self.db_loc, train_dataset_name, model_architecture_name, 0, arrival_pattern,
                                                       run_number, training_loop_name, al_method_name, al_budget, init_task_size, unl_buffer_size)
 
         if round_info_tuple is not None:
@@ -283,7 +275,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
 
         # Because the detection experiments do not save round info until the end of the round (as checkpointing is managed
         # by mmdetection), there may be a round currently active. We can check if a round is active by checking for model info.
-        split_path, working_dir, _ = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 1, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
+        split_path, working_dir, _ = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 0, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
         abs_split_path, abs_working_dir = get_absolute_paths_det(self.base_exp_directory, split_path, working_dir)
         abs_latest_chkpt_path = os.path.join(abs_working_dir, "latest.pth")
         still_training = True
@@ -299,7 +291,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
                 self.round_number -= 1
                 still_training = False
 
-                split_path, working_dir, _      = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 1, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
+                split_path, working_dir, _      = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 0, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
                 abs_split_path, abs_working_dir = get_absolute_paths_det(self.base_exp_directory, split_path, working_dir)
                 abs_latest_chkpt_path           = os.path.join(abs_working_dir, "latest.pth")
 
@@ -380,7 +372,7 @@ class LimitedMemoryDetectionExperiment(Experiment):
         train_dataset = TransformSubsetDetection(full_train_dataset, train_split)  
 
         # Get work directory for mmdetection. Save the split info to the abs path.
-        split_path, working_dir, _ = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 1, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
+        split_path, working_dir, _ = generate_save_locations_for_al_round_det(train_dataset_name, model_architecture_name, 0, arrival_pattern, training_loop_name, al_method_name, run_number, al_budget, init_task_size, unl_buffer_size, self.round_number)
         abs_split_path, abs_working_dir = get_absolute_paths_det(self.base_exp_directory, split_path, working_dir)
         atomic_json_save(abs_split_path, train_unlabeled_dataset_split)
 

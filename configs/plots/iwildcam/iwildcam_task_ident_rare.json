@@ -12,8 +12,8 @@
     "y_axis_measure":   "task_identification_accuracy",
     "train_dataset": "IWildCam",
     "model_architecture": "densenet161",
-    "limited_mem": 1,
+    "limited_mem": 0,
     "arrival_pattern": "rare_beginning",
     "max_plot_points": 15,
-    "experiments": [["cross_entropy_sgd_rand_flips", "lm_streamline_fl2mi_rbf_fl_cosine", 1000, 1000, 2000, "IWildCam", [1,0,0]]]
+    "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_logdetcg_cosine", 100, 200, 2000, "IWildCam", [1,0,0]]]
 }
