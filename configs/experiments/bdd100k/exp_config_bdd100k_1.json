@@ -1,0 +1,10 @@
+{
+    "gpus": ["cuda:0", "cuda:1"],
+    "dataset_directory": "/home/013/s/sn/snk170001/streamline/data",
+    "db_loc": "/home/013/s/sn/snk170001/streamline/time/results/streamline_db.db",
+    "base_exp_directory": "/home/013/s/sn/snk170001/streamline/time/results/large_objects/",
+    "distil_directory": "../distil",
+    "experiments": [["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "margin_det_reservoir", 50, 500, 1000, 64, 8, 0],
+                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "least_confidence_det_reservoir", 50, 500, 1000, 64, 8, 0],
+                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "random_reservoir", 50, 500, 1000, 64, 8, 0]]
+}

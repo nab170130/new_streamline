@@ -10,7 +10,7 @@ CLASSES = ('pedestrian', 'rider', 'car', 'truck', 'bus',
 
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = '/home/shared/data/bdd_100k/bdd100k'
+data_root = '/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -40,26 +40,26 @@ test_pipeline = [
 ]
 data = dict(
     samples_per_gpu=2,
-    workers_per_gpu=2,
+    workers_per_gpu=0,
     train=dict(
         type='RepeatDataset',
         times=1,
         dataset=dict(
             type=dataset_type,
-            ann_file='/home/shared/data/bdd_100k/bdd100k/labels/det_20/det_train_coco.json',
-            img_prefix='/home/shared/data/bdd_100k/bdd100k/images/100k/train',
+            ann_file='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/labels/det_20/det_train_coco.json',
+            img_prefix='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/images/100k/train',
             pipeline=train_pipeline,
             classes=CLASSES)),
     val=dict(
         type=dataset_type,
-        ann_file='/home/shared/data/bdd_100k/bdd100k/labels/det_20/det_val_coco.json',
-        img_prefix='/home/shared/data/bdd_100k/bdd100k/images/100k/val',
+        ann_file='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/labels/det_20/det_val_coco.json',
+        img_prefix='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/images/100k/val',
         pipeline=test_pipeline,
         classes=CLASSES),
     test=dict(
         type=dataset_type,
-        ann_file='/home/shared/data/bdd_100k/bdd100k/labels/det_20/det_val_coco.json',
-        img_prefix='/home/shared/data/bdd_100k/bdd100k/images/100k/val',
+        ann_file='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/labels/det_20/det_val_coco.json',
+        img_prefix='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/images/100k/val',
         pipeline=test_pipeline,
         classes=CLASSES))
 evaluation = dict(interval=50, metric='bbox')
@@ -73,4 +73,4 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(policy='step', step=[3])
 # runtime settings
 runner = dict(
-    type='EpochBasedRunner', max_epochs=150)  # actual epoch = 4 * 3 = 12
+    type='EpochBasedRunner', max_epochs=100)  # actual epoch = 4 * 3 = 12

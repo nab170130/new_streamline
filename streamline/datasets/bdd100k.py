@@ -64,20 +64,16 @@ class BDD100K(Dataset):
         # Before this is done, we first get an attribute dictionary that assigns each index to a particular attribute value
         attribute_tuple_to_idx_dict = self._create_per_attr_idx(base_dataset)
 
-        task_attribute_tuples = [("clear", "daytime"),
-                                 ("clear", "night"),
-                                 ("foggy", "daytime"),
-                                 ("foggy", "night")]
+        task_attribute_tuples = ["daytime", "night"]
 
         # Form each task partition idx by finding the intersection across each attribute value. This will be the behind-the-scenes
         # mapping used for the BDD100k base dataset given here.
         bdd100k_base_mapping_partitions = []
         task_idx_partitions = []
         start_idx = 0
-        for weather_attr, time_attr in task_attribute_tuples:    
+        for time_attr in task_attribute_tuples:    
             all_matching_time_idx       = set(attribute_tuple_to_idx_dict["timeofday"][time_attr])
-            all_matching_weather_idx    = set(attribute_tuple_to_idx_dict["weather"][weather_attr])
-            intersection_idx            = list(set.intersection(all_matching_time_idx, all_matching_weather_idx))    
+            intersection_idx            = list(all_matching_time_idx) 
             end_idx                     = start_idx + len(intersection_idx)
             bdd100k_base_mapping_partitions.append(intersection_idx)
             task_idx_partition = list(range(start_idx, end_idx))

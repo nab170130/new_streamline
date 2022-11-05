@@ -133,7 +133,7 @@ class StreamlineBaseDetection(Strategy, ABC):
     def compute_sem_seg_features(self, dataset):
 
         dataloader  = build_dataloader(dataset, self.cfg["data"]["samples_per_gpu"], self.cfg["data"]["workers_per_gpu"], 
-                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"])
+                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"], persistent_workers=False)
 
         # This method uses a pre-trained semantic segmentor to extract features at the image level.
         # Since segmentors use information about the full image when segmenting, the feature space 
@@ -190,7 +190,7 @@ class StreamlineBaseDetection(Strategy, ABC):
     def compute_obj_det_features(self, dataset, gt_proposals=False):
 
         dataloader  = build_dataloader(dataset, self.cfg["data"]["samples_per_gpu"], self.cfg["data"]["workers_per_gpu"], 
-                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"])
+                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"], persistent_workers=False)
         model       = self.model.to(self.args["device"])
 
         # Here, we will be extracting the top-k proposal feature vectors for each image. Here, "top-k"

@@ -35,7 +35,7 @@ class MarginDetection(Strategy):
     def compute_average_margin_scores(self, dataset):
 
         dataloader  = build_dataloader(dataset, self.cfg["data"]["samples_per_gpu"], self.cfg["data"]["workers_per_gpu"], 
-                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"])
+                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"], persistent_workers=False)
         model       = self.model.to(self.args["device"])
 
         # Start computing the average of the max-entropic class predictions for each proposal in all images.
