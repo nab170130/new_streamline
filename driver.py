@@ -152,8 +152,12 @@ if __name__ == "__main__":
                 from streamline.experiments import LimitedMemoryExperiment
                 experiment_to_run = LimitedMemoryExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc)           
         elif is_limited_mem == 0:
-            from streamline.experiments import UnlimitedMemoryExperiment
-            experiment_to_run = UnlimitedMemoryExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc)
+            if training_loop == "bdd100k_train":
+                from streamline.experiments import UnlimitedMemoryDetectionExperiment
+                experiment_to_run = UnlimitedMemoryDetectionExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc)
+            else:
+                from streamline.experiments import UnlimitedMemoryExperiment
+                experiment_to_run = UnlimitedMemoryExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc) 
 
         # Create and run a worker process
         worker_process = mp.Process(target=_worker_entry, args=(experiment_to_run, experiment_arguments, gpu_to_assign, gpu_availability_queue, distil_loc))
