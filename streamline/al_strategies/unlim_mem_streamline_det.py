@@ -79,15 +79,15 @@ class UnlimitedMemoryStreamlineDetection(StreamlineBaseDetection):
         self.model.eval()
         
         # Get the semantic segmentation similarity kernel, which will be used for task identification,
-        sem_seg_unlab_feat  = self.compute_sem_seg_features(self.unlabeled_dataset, gt_proposals=False)
-        sem_seg_lab_feat    = self.compute_sem_seg_features(self.labeled_dataset, gt_proposals=True)
+        sem_seg_unlab_feat  = self.compute_sem_seg_features(self.unlabeled_dataset)
+        sem_seg_lab_feat    = self.compute_sem_seg_features(self.labeled_dataset)
         sem_seg_all_feat    = torch.cat([sem_seg_unlab_feat, sem_seg_lab_feat])
         sem_seg_kern        = self.compute_sem_seg_similarity_kernel(sem_seg_all_feat)
         task_identity       = self.identify_task(sem_seg_kern.cpu().numpy())
 
         # Now, get the object detection similarity kernel, which will be used for selecting new instances
-        obj_det_unlab_feat                                  = self.compute_obj_det_features(self.unlabeled_dataset)
-        obj_det_lab_feat                                    = self.compute_obj_det_features(self.labeled_dataset)
+        obj_det_unlab_feat                                  = self.compute_obj_det_features(self.unlabeled_dataset, gt_proposals=False)
+        obj_det_lab_feat                                    = self.compute_obj_det_features(self.labeled_dataset, gt_proposals=True)
         obj_det_all_feat                                    = torch.cat([obj_det_unlab_feat, obj_det_lab_feat])
         obj_det_kern                                        = self.compute_obj_det_similarity_kernel(obj_det_all_feat)
         data_sijs, data_private_sijs, private_private_sijs  = self.calculate_subkernels(obj_det_kern, task_identity)
