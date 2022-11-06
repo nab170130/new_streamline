@@ -113,8 +113,11 @@ class DatasetFactory:
 
         initial_training_split_idx_partitions = []
         initial_unlabeled_split_idx_partitions = []
-        for task_idx_partition in full_train_dataset.task_idx_partitions:
-            training_task_idx_partition = np.random.choice(task_idx_partition, size=per_task_initial_size // redundancy_factor, replace=False).tolist()
+        for task_num, task_idx_partition in enumerate(full_train_dataset.task_idx_partitions):
+            task_sample_size = per_task_initial_size // redundancy_factor
+            if task_num == len(full_train_dataset.task_idx_partitions) - 1:
+                task_sample_size = task_sample_size // 5
+            training_task_idx_partition = np.random.choice(task_idx_partition, size=task_sample_size, replace=False).tolist()
             training_task_idx_partition = training_task_idx_partition * redundancy_factor
             unlabeled_task_idx_partition = list(set(task_idx_partition) - set(training_task_idx_partition))
             initial_training_split_idx_partitions.append(training_task_idx_partition)
