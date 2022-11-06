@@ -1,7 +1,8 @@
 class SimpleUnlimitedMemoryWrapperStrategy:
 
     def __init__(self, wrapped_strategy):
-        self.wrapped_strategy = wrapped_strategy
+        self.wrapped_strategy   = wrapped_strategy
+        self.args               = wrapped_strategy.args
 
 
     def get_oracle_task_identity(self):
@@ -21,5 +22,6 @@ class SimpleUnlimitedMemoryWrapperStrategy:
         task_identity = self.get_oracle_task_identity()
         selected_unlabeled_idx_partitioned = [[] for x in range(len(self.wrapped_strategy.labeled_dataset.task_idx_partitions))]
         selected_unlabeled_idx_partitioned[task_identity].extend(selected_idx)
+        self.args = self.wrapped_strategy.args
 
         return selected_unlabeled_idx_partitioned
