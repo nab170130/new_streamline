@@ -118,6 +118,8 @@ class StreamlineBaseDetection(Strategy, ABC):
             # Store the objective values
             smi_base_fractions.append(submodular_mutual_information_objective_value / norm_factor)#base_objective_value)
         
+        self.smi_base_fractions = smi_base_fractions
+        
         # Determine which SMI-base fraction was the highest. We predict that the coreset with the highest fraction gives the task identity
         task_identity = None
         max_task_fraction = -float("inf")

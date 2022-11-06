@@ -137,11 +137,14 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
                 for al_param in prev_al_params:
                     if al_param.startswith("reservoir"):
                         al_params[al_param] = prev_al_params[al_param]
+            elif "ulm_streamline" in al_method_name:
+                al_params['acc_budget'] = prev_al_params['acc_budget'] if 'acc_budget' in prev_al_params else 0
             al_strategy_factory = ALFactory(train_dataset, unlabeled_dataset, model, num_classes, al_params)
             al_strategy = al_strategy_factory.get_strategy(al_method_name)
 
             # Do th AL selection. If this is a partition reservoir strategy, pass the task identity (oracle)
             selected_unlabeled_idx = al_strategy.select(al_budget)
+            al_params               = al_strategy.args
 
             # selected_labeled_idx and selected_unlabeled_idx are lists of lists. Each one
             # has num_tasks lists, and the elements in those lists are indices with respect to the
