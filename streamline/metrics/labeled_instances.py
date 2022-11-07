@@ -58,6 +58,9 @@ class LabeledInstancesMetric(ExperimentMetric):
             for task_idx_partition in curr_train_unlabeled_dataset_split["train"]:
                 curr_train_indices.extend(task_idx_partition)
 
-            num_new_labeled_instances = len(set(curr_train_indices) - set(prev_train_indices))
+            if self.limited_mem:
+                num_new_labeled_instances = len(set(curr_train_indices) - set(prev_train_indices))
+            else:
+                num_new_labeled_instances = len(curr_train_indices) - len(prev_train_indices)
             self.value = num_new_labeled_instances
             self.time = time.time_ns()
