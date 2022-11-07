@@ -93,10 +93,13 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
         num_tasks = len(full_train_dataset.task_idx_partitions)
         if arrival_pattern == "sequential":
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "rare_beginning":
+        elif arrival_pattern.startswith("rare_every"):
+            every_mod = int(arrival_pattern.split("_")[2])
             task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
-            task_arrival_pattern[1]     = num_tasks - 1
-            task_arrival_pattern[9]     = num_tasks - 1
+            start_idx = 1 + every_mod
+            while start_idx < len(task_arrival_pattern):
+                task_arrival_pattern[start_idx] = num_tasks - 1
+                start_idx = start_idx + every_mod
         else:
             raise ValueError("Unknown arrival pattern")
 

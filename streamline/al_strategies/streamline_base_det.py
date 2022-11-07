@@ -317,13 +317,19 @@ class StreamlineBaseDetection(Strategy, ABC):
 
                 # Compute the cosine similarities between each of the k^2 proposals between each pair
                 # of images between the batch and the whole feature tensor. This is done by contracting
-                # along the last dimension (the d-dimensional feature vectors). Then, compute the mean of
-                # these similarities by only averaging those that do not correspond to zero-vector similarities.
+                # along the last dimension (the d-dimensional feature vectors). 
+                # 
+                # Next, the similarity of an image-image pair is computed by taking an average of the max over
+                # the columns and an average of the max over the rows. The former helps calculate how well the 
+                # first image's objects are covered by the second's objects; the latter helps calculate how well
+                # the second image's objects are covered by the first objects.
                 nbatch_n_k_k_kern                                   = torch.tensordot(batch_normalized_features, normalized_feature_tensor, dims=([-1],[-1])).permute(0,2,1,3)
-                nbatch_n_image_kern                                 = torch.sum(nbatch_n_k_k_kern, dim=(2,3)) 
-                nbatch_n_avg_denom                                  = torch.outer(batch_proposal_nonzero_vector_counts, image_proposal_nonzero_vector_counts)
-                nbatch_n_image_kern                                 = nbatch_n_image_kern / nbatch_n_avg_denom
-                image_image_similarity_kernel[start_idx:end_idx]    = nbatch_n_image_kern
+                nbatch_n_avg_divisor_row                            = batch_proposal_nonzero_vector_counts.repeat(1,n)
+                nbatch_n_avg_divisor_col                            = image_proposal_nonzero_vector_counts.repeat(nbatch,1)
+                nbatch_n_avg_max_row                                = torch.sum(torch.amax(nbatch_n_k_k_kern, dim=3), dim=2) / nbatch_n_avg_divisor_row
+                nbatch_n_avg_max_col                                = torch.sum(torch.amax(nbatch_n_k_k_kern, dim=2), dim=2) / nbatch_n_avg_divisor_col
+                nbatch_n_avg                                        = (nbatch_n_avg_max_row + nbatch_n_avg_max_col) / 2.
+                image_image_similarity_kernel[start_idx:end_idx]    = nbatch_n_avg
 
                 # Update the new start idx for the next iteration
                 pbar.update(end_idx - start_idx)
