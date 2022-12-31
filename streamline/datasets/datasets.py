@@ -9,6 +9,8 @@ import torch
 from .bdd100k import BDD100K
 from .fmow import FMOW
 from .iwildcam import IWildCam
+from .kitti_fog import KITTIFog
+from .cityscapes_rain import CityscapesRain
 from .office_31 import Office31
 from .organ_mnist import OrganMNIST
 from .perm_mnist import PermutedMNIST
@@ -62,13 +64,35 @@ class DatasetFactory:
         elif dataset_name == "BDD100K":
 
             # To get the test transform, we simply load the config and get its test pipeline
-            bdd100k_config_path = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
+            bdd100k_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
             bdd100k_config      = Config.fromfile(bdd100k_config_path)
 
             # Build the dataset using the train configuration
             full_train_dataset  = BDD100K(self.root_directory, train=True)
             test_transform      = bdd100k_config.test_pipeline
             nclasses            = len(bdd100k_config.CLASSES)
+
+        elif dataset_name == "KITTIFog":
+
+            # To get the test transform, we simply load the config and get its test pipeline
+            kitti_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_kitti_cocofmt.py"
+            kitti_config      = Config.fromfile(kitti_config_path)
+
+            # Build the dataset using the train configuration
+            full_train_dataset  = KITTIFog(self.root_directory, train=True)
+            test_transform      = kitti_config.test_pipeline
+            nclasses            = len(kitti_config.CLASSES)
+
+        elif dataset_name == "CityscapesRain":
+
+            # To get the test transform, we simply load the config and get its test pipeline
+            cityscapes_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_cityscapes_cocofmt.py"
+            cityscapes_config      = Config.fromfile(cityscapes_config_path)
+
+            # Build the dataset using the train configuration
+            full_train_dataset  = CityscapesRain(self.root_directory, train=True)
+            test_transform      = cityscapes_config.test_pipeline
+            nclasses            = len(cityscapes_config.CLASSES)
 
         else:
 
@@ -111,9 +135,21 @@ class DatasetFactory:
 
         elif dataset_name == "BDD100K":
 
-            # SET TO MATCH IN lim_memory_det_experiment.py
+            # SET TO MATCH IN (un)lim_memory_det_experiment.py -- SAME FOR ALL OBJ DET.
             redundancy_factor = 2
             full_train_dataset  = BDD100K(self.root_directory, train=True)
+
+        elif dataset_name == "KITTIFog":
+
+            # SET TO MATCH IN (un)lim_memory_det_experiment.py -- SAME FOR ALL OBJ DET.
+            redundancy_factor = 2
+            full_train_dataset  = KITTIFog(self.root_directory, train=True)
+
+        elif dataset_name == "CityscapesRain":
+
+            # SET TO MATCH IN (un)lim_memory_det_experiment.py -- SAME FOR ALL OBJ DET.
+            redundancy_factor = 2
+            full_train_dataset  = CityscapesRain(self.root_directory, train=True)
 
         else:
 
@@ -184,13 +220,35 @@ class DatasetFactory:
         elif dataset_name == "BDD100K":
 
             # To get the test transform, we simply load the config and get its test pipeline
-            bdd100k_config_path = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
+            bdd100k_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
             bdd100k_config      = Config.fromfile(bdd100k_config_path)
 
             # Build the dataset using the train configuration
             test_transform  = bdd100k_config.test_pipeline
             test_dataset    = BDD100K(self.root_directory, train=False)
             nclasses        = len(bdd100k_config.CLASSES)
+
+        elif dataset_name == "KITTIFog":
+
+            # To get the test transform, we simply load the config and get its test pipeline
+            kitti_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_kitti_cocofmt.py"
+            kitti_config      = Config.fromfile(kitti_config_path)
+
+            # Build the dataset using the train configuration
+            test_transform  = kitti_config.test_pipeline
+            test_dataset    = KITTIFog(self.root_directory, train=False)
+            nclasses        = len(kitti_config.CLASSES)
+        
+        elif dataset_name == "CityscapesRain":
+
+            # To get the test transform, we simply load the config and get its test pipeline
+            cityscapes_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_kitti_cocofmt.py"
+            cityscapes_config      = Config.fromfile(cityscapes_config_path)
+
+            # Build the dataset using the train configuration
+            test_transform  = cityscapes_config.test_pipeline
+            test_dataset    = CityscapesRain(self.root_directory, train=False)
+            nclasses        = len(cityscapes_config.CLASSES)
 
         else:
 

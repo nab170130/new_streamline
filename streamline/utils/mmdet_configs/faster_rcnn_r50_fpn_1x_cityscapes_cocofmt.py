@@ -1,16 +1,15 @@
 _base_ = [
-    '../_base_/models/faster_rcnn_r50_fpn.py',
-    '../_base_/datasets/coco_detection.py',
-    '../_base_/default_runtime.py'
+    '_base_/models/faster_rcnn_r50_fpn.py',
+    '_base_/datasets/coco_detection.py',
+    '_base_/default_runtime.py'
 ]
-model = dict(roi_head=dict(bbox_head=dict(num_classes=10)))
+model = dict(roi_head=dict(bbox_head=dict(num_classes=8)))
 
-CLASSES = ('pedestrian', 'rider', 'car', 'truck', 'bus',
-           'train', 'motorcycle', 'bicycle', 'traffic light', 'traffic sign')
+CLASSES = ('person', 'rider', 'car', 'truck', 'bus', 'train', 'motorcycle', 'bicycle')
 
 # dataset settings
 dataset_type = 'CocoDataset'
-data_root = '/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k'
+data_root = '/home/013/s/sn/snk170001/streamline/data/cityscapes/leftImg8bit/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -41,29 +40,23 @@ test_pipeline = [
 data = dict(
     samples_per_gpu=2,
     workers_per_gpu=0,
-    train=dict(
+    train_rain=dict(
         type='RepeatDataset',
         times=1,
         dataset=dict(
             type=dataset_type,
-            ann_file='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/labels/det_20/det_train_coco.json',
-            img_prefix='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/images/100k/train',
+            ann_file='/home/013/s/sn/snk170001/streamline/data/cityscapes/base_rain_coco_train.json',
+            img_prefix='/home/013/s/sn/snk170001/streamline/data/cityscapes/leftImg8bit/train',
             pipeline=train_pipeline,
             classes=CLASSES)),
-    val=dict(
+    val_rain=dict(
         type=dataset_type,
-        ann_file='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/labels/det_20/det_val_coco.json',
-        img_prefix='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/images/100k/val',
-        pipeline=test_pipeline,
-        classes=CLASSES),
-    test=dict(
-        type=dataset_type,
-        ann_file='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/labels/det_20/det_val_coco.json',
-        img_prefix='/home/013/s/sn/snk170001/streamline/data/bdd_100k/bdd100k/images/100k/val',
+        ann_file='/home/013/s/sn/snk170001/streamline/data/cityscapes/base_rain_coco_val.json',
+        img_prefix='/home/013/s/sn/snk170001/streamline/data/cityscapes/leftImg8bit/val',
         pipeline=test_pipeline,
         classes=CLASSES))
-evaluation = dict(interval=150, metric='bbox')
-checkpoint_config = dict(interval=50)
+evaluation = dict(interval=50, metric='bbox')
+checkpoint_config = dict(interval=10)
 
 # optimizer
 optimizer = dict(type='SGD', lr=0.001, momentum=0.9, weight_decay=0.0005)

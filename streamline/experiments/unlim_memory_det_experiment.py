@@ -19,10 +19,11 @@ import torch
 class UnlimitedMemoryDetectionExperiment(Experiment):
     
 
-    def __init__(self, comm_lock, comm_sem, parent_pipe, gpu_name, base_dataset_directory, base_exp_directory, db_loc):
+    def __init__(self, comm_lock, comm_sem, parent_pipe, gpu_name, base_dataset_directory, base_exp_directory, db_loc, obj_det_config_path):
 
         super(UnlimitedMemoryDetectionExperiment, self).__init__(comm_lock, comm_sem, parent_pipe, gpu_name, base_dataset_directory, base_exp_directory, db_loc)
         self.round_number = 0
+        self.obj_det_config_path = obj_det_config_path
 
 
     def experiment(self, train_dataset_name, model_architecture_name, limited_memory, arrival_pattern, run_number, training_loop_name, al_method_name, al_budget, init_task_size, unl_buffer_size, batch_size, num_rounds, delete_large_objects_after_run=False):
@@ -62,7 +63,7 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
                     round_join_metric_tuple = (train_dataset_name, model_architecture_name, 0, arrival_pattern, run_number, training_loop_name, al_method_name,
                                                 al_budget, init_task_size, unl_buffer_size, round_id, current_epoch, dataset_split_path, model_weight_path, 
                                                 opt_state_path, lr_state_path, completed_unix_time, metric_name, train_dataset_name, None, None)
-                    metric_factory = MetricFactory(self.db_loc, self.base_exp_directory, self.base_dataset_directory, self.gpu_name, batch_size, round_join_metric_tuple)
+                    metric_factory = MetricFactory(self.db_loc, self.base_exp_directory, self.base_dataset_directory, self.gpu_name, batch_size, round_join_metric_tuple, self.obj_det_config_path)
                     metric_to_compute = metric_factory.get_metric(metric_name)
                     metric_to_compute.evaluate()
 
@@ -130,12 +131,11 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
             
             # Form the AL strategy.
             replay_buffer_capacity = init_task_size * num_tasks
-            bdd100k_config_path             = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
-            bdd100k_config                  = Config.fromfile(bdd100k_config_path)
-            bdd100k_config['device']        = self.gpu_name.split(":")[0]
-            bdd100k_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
-            bdd100k_config["seed"]      = 0
-            al_params = {"device": self.gpu_name, "batch_size": bdd100k_config["data"]["samples_per_gpu"], "buffer_capacity": replay_buffer_capacity, "cfg": bdd100k_config}
+            obj_det_config                  = Config.fromfile(self.obj_det_config_path)
+            obj_det_config['device']        = self.gpu_name.split(":")[0]
+            obj_det_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
+            obj_det_config["seed"]      = 0
+            al_params = {"device": self.gpu_name, "batch_size": obj_det_config["data"]["samples_per_gpu"], "buffer_capacity": replay_buffer_capacity, "cfg": obj_det_config}
             if al_method_name.endswith("reservoir"):
                 for al_param in prev_al_params:
                     if al_param.startswith("reservoir"):
@@ -187,7 +187,7 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
             train_dataset = TransformSubsetDetection(full_train_dataset, train_split)  
 
             pretrain_weight_directory = os.path.join(self.base_exp_directory, "weights")
-            model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory)
+            model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory, obj_det_config_path=self.obj_det_config_path)
             new_model = model_factory.get_model(model_architecture_name)
 
             # Save the new split.
@@ -196,14 +196,13 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
             atomic_json_save(abs_split_path, train_unlabeled_split)
 
             # Get a training loop using the (new) training split
-            bdd100k_config_path             = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
-            bdd100k_config                  = Config.fromfile(bdd100k_config_path)
-            bdd100k_config['device']        = self.gpu_name.split(":")[0]
-            bdd100k_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
-            bdd100k_config["work_dir"]      = abs_working_dir
-            bdd100k_config["resume_from"]   = None
-            bdd100k_config["seed"]      = 0
-            training_loop_factory = TrainingLoopFactory(train_dataset, test_transform, new_model, None, bdd100k_config)
+            obj_det_config                  = Config.fromfile(self.obj_det_config_path)
+            obj_det_config['device']        = self.gpu_name.split(":")[0]
+            obj_det_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
+            obj_det_config["work_dir"]      = abs_working_dir
+            obj_det_config["resume_from"]   = None
+            obj_det_config["seed"]      = 0
+            training_loop_factory = TrainingLoopFactory(train_dataset, test_transform, new_model, None, obj_det_config)
             round_training_loop = training_loop_factory.get_training_loop(training_loop_name)
 
         else:
@@ -302,13 +301,12 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
                 abs_latest_chkpt_path           = os.path.join(abs_working_dir, "latest.pth")
 
         # BDD100K requires different treatment. We will use MMDetection to load the base dataset based on the configs given in the utils folder.
-        bdd100k_config_path             = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
-        bdd100k_config                  = Config.fromfile(bdd100k_config_path)
-        bdd100k_config['device']        = self.gpu_name.split(":")[0]
-        bdd100k_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
-        bdd100k_config["work_dir"]      = abs_working_dir
-        bdd100k_config["resume_from"]   = abs_latest_chkpt_path
-        bdd100k_config["seed"]      = 0
+        obj_det_config                  = Config.fromfile(self.obj_det_config_path)
+        obj_det_config['device']        = self.gpu_name.split(":")[0]
+        obj_det_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
+        obj_det_config["work_dir"]      = abs_working_dir
+        obj_det_config["resume_from"]   = abs_latest_chkpt_path
+        obj_det_config["seed"]      = 0
 
         # Retrieve the split data
         with open(abs_split_path, "r") as f:
@@ -320,12 +318,12 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
 
         # Get the model. However, if there is a checkpoint we need to be loading from, initialize the model with those weights.
         pretrain_weight_directory = os.path.join(self.base_exp_directory, "weights")
-        model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory)
+        model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory, obj_det_config_path=self.obj_det_config_path)
         model = model_factory.get_model(model_architecture_name)
 
         if os.path.exists(abs_latest_chkpt_path):
             checkpoint      = load_checkpoint(model, abs_latest_chkpt_path, map_location="cpu")
-            model.cfg       = bdd100k_config
+            model.cfg       = obj_det_config
         
         model.to(self.gpu_name)
         model.eval()
@@ -335,7 +333,7 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
         train_dataset = TransformSubsetDetection(full_train_dataset, train_split)  
 
         # BDD100K requires different treatment. We will use MMDetection to load the base dataset based on the configs given in the utils folder.
-        training_loop_factory = TrainingLoopFactory(train_dataset, test_transform, model, None, bdd100k_config)
+        training_loop_factory = TrainingLoopFactory(train_dataset, test_transform, model, None, obj_det_config)
         round_training_loop = training_loop_factory.get_training_loop(training_loop_name)
 
         # Lastly, take care of the the al params array.
@@ -370,7 +368,7 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
         
         # Get the model
         pretrain_weight_directory = os.path.join(self.base_exp_directory, "weights")
-        model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory)
+        model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory, obj_det_config_path=self.obj_det_config_path)
         model = model_factory.get_model(model_architecture_name)
         
         # Get a training loop using the provided data split
@@ -383,14 +381,13 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
         atomic_json_save(abs_split_path, train_unlabeled_dataset_split)
 
         # BDD100K requires different treatment. We will use MMDetection to load the base dataset based on the configs given in the utils folder.
-        bdd100k_config_path             = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
-        bdd100k_config                  = Config.fromfile(bdd100k_config_path)
-        bdd100k_config['device']        = self.gpu_name.split(":")[0]
-        bdd100k_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
-        bdd100k_config["work_dir"]      = abs_working_dir
-        bdd100k_config["resume_from"]   = None
-        bdd100k_config["seed"]      = 0
-        training_loop_factory = TrainingLoopFactory(train_dataset, test_transform, model, None, bdd100k_config)
+        obj_det_config                  = Config.fromfile(self.obj_det_config_path)
+        obj_det_config['device']        = self.gpu_name.split(":")[0]
+        obj_det_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
+        obj_det_config["work_dir"]      = abs_working_dir
+        obj_det_config["resume_from"]   = None
+        obj_det_config["seed"]      = 0
+        training_loop_factory = TrainingLoopFactory(train_dataset, test_transform, model, None, obj_det_config)
         round_training_loop = training_loop_factory.get_training_loop(training_loop_name)
 
         return full_train_dataset, test_transform, num_classes, train_unlabeled_dataset_split, round_training_loop, model, dict(), True

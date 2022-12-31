@@ -1,9 +1,9 @@
 {
-    "gpus": ["cuda:0", "cuda:1", "cuda:2", "cuda:3"],
+    "gpus": ["cuda:0", "cuda:1"],
     "batch_size": 32,
-    "dataset_directory": "/home/shared/data",
-    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
-    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
+    "dataset_directory": "/home/013/s/sn/snk170001/streamline/data",
+    "db_loc": "/home/013/s/sn/snk170001/streamline/time/not_as_old_results/streamline_db.db",
+    "base_exp_directory": "/home/013/s/sn/snk170001/streamline/time/not_as_old_results/large_objects/",
     "distil_directory": "../distil",
     "metrics": [["BDD100K", "mAP", "BDD100K"],
                 ["BDD100K", "per_task_mAP_0", "BDD100K"],

@@ -12,9 +12,10 @@ import torch.nn as nn
 
 class ModelFactory:
     
-    def __init__(self, num_classes=1000, pretrain_weight_directory=None):
+    def __init__(self, num_classes=1000, pretrain_weight_directory=None, obj_det_config_path=None):
         self.num_classes = num_classes
         self.pretrain_weight_directory = pretrain_weight_directory
+        self.obj_det_config_path = obj_det_config_path
 
     def get_model(self, model_name):
         
@@ -54,9 +55,9 @@ class ModelFactory:
         elif model_name.startswith("densenet161"):
             return DenseNet161(pretrain_weight_directory=self.pretrain_weight_directory, num_classes=self.num_classes)
         elif model_name.startswith("faster_rcnn"):
-            # Use MMDetection to load and construct the model
-            bdd100k_config_path = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
-            bdd100k_config      = Config.fromfile(bdd100k_config_path)
-            model               = build_detector(bdd100k_config.model, train_cfg=bdd100k_config.get('train_cfg'), test_cfg=bdd100k_config.get('test_cfg'))
+            # Use MMDetection to load and construct the model.
+            obj_det_config                                                  = Config.fromfile(self.obj_det_config_path)
+            obj_det_config['model']['roi_head']['bbox_head']['num_classes'] = self.num_classes
+            model               = build_detector(obj_det_config.model, train_cfg=obj_det_config.get('train_cfg'), test_cfg=obj_det_config.get('test_cfg'))
             model.init_weights()
             return model

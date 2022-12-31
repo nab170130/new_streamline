@@ -15,10 +15,11 @@ import torch
 
 class MeanAveragePrecisionMetric(ExperimentMetric):
 
-    def __init__(self, db_loc, base_exp_directory, dataset_root_directory, gpu_name, batch_size, round_join_metric_tuple):
+    def __init__(self, db_loc, base_exp_directory, dataset_root_directory, gpu_name, batch_size, round_join_metric_tuple, obj_det_config_path):
         
         super(MeanAveragePrecisionMetric, self).__init__(db_loc, base_exp_directory, dataset_root_directory, gpu_name, batch_size, round_join_metric_tuple)
         self.name = "mAP"
+        self.obj_det_config_path = obj_det_config_path
 
     def evaluate(self):
 
@@ -26,23 +27,23 @@ class MeanAveragePrecisionMetric(ExperimentMetric):
         abs_working_dir, _  = os.path.split(checkpoint_path)
 
         # BDD100K requires different treatment. We will use MMDetection to load the base dataset based on the configs given in the utils folder.
-        bdd100k_config_path             = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
-        bdd100k_config                  = Config.fromfile(bdd100k_config_path)
-        bdd100k_config['device']        = self.gpu_name.split(":")[0]
-        bdd100k_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
-        bdd100k_config["work_dir"]      = abs_working_dir
-        bdd100k_config["resume_from"]   = checkpoint_path
-        bdd100k_config["seed"]      = 0
+        obj_det_config                  = Config.fromfile(self.obj_det_config_path)
+        obj_det_config['device']        = self.gpu_name.split(":")[0]
+        obj_det_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
+        obj_det_config["work_dir"]      = abs_working_dir
+        obj_det_config["resume_from"]   = checkpoint_path
+        obj_det_config["seed"]      = 0
 
         # Get the evaluation dataset
         eval_dataset, eval_transform, num_classes = self.load_dataset()
+        obj_det_config['model']['roi_head']['bbox_head']['num_classes'] = num_classes
             
         # Get the model from the checkpoint and a dataloader
-        model       = init_detector(bdd100k_config, checkpoint=checkpoint_path, device=self.gpu_name, cfg_options=None)
-        eval_loader = build_dataloader(eval_dataset, bdd100k_config["data"]["samples_per_gpu"], bdd100k_config["data"]["workers_per_gpu"], 
-                                        num_gpus=1, dist=True, shuffle=False, seed=bdd100k_config["seed"])
+        model       = init_detector(obj_det_config, checkpoint=checkpoint_path, device=self.gpu_name, cfg_options=None)
+        eval_loader = build_dataloader(eval_dataset, obj_det_config["data"]["samples_per_gpu"], obj_det_config["data"]["workers_per_gpu"], 
+                                        num_gpus=1, dist=True, shuffle=False, seed=obj_det_config["seed"])
 
-        model       = build_dp(model, bdd100k_config["device"], device_ids=bdd100k_config["gpu_ids"])
+        model       = build_dp(model, obj_det_config["device"], device_ids=obj_det_config["gpu_ids"])
         outputs     = single_gpu_test(model, eval_loader)
 
         eval_results = eval_dataset.evaluate(outputs)
