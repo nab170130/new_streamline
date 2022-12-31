@@ -1,6 +1,6 @@
 {
     "db_loc": "zdeleteme/streamline_db.db",
-    "name": "iwildcam_rare_task_acc",
+    "name": "iwildcam_rare_task_acc_study",
     "type": "one_plot",
     "figsize": [10, 8],
     "font":             "sans_serif",
@@ -16,7 +16,5 @@
     "arrival_pattern": "sequential",
     "max_plot_points": 15,
     "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 250, 500, 4000, "IWildCam", [1,0,0]],
-                    ["cross_entropy_sgd_rand_flips", "badge", 250, 500, 4000, "IWildCam", [0,1,0]],
-                    ["cross_entropy_sgd_rand_flips", "random", 250, 500, 4000, "IWildCam", [0,0,1]],
-                    ["cross_entropy_sgd_rand_flips", "entropy", 250, 500, 4000, "IWildCam", [0,1,1]]]
+                    ["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_rbf", 250, 500, 4000, "IWildCam", [0,1,0]]]
 }

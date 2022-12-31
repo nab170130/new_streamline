@@ -15,5 +15,5 @@
     "limited_mem": 0,
     "arrival_pattern": "rare_beginning",
     "max_plot_points": 15,
-    "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_logdetcg_cosine", 100, 200, 2000, "IWildCam", [1,0,0]]]
+    "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 800, 1000, 4000, "IWildCam", [1,0,0]]]
 }

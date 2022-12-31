@@ -1,10 +1,9 @@
 {
     "gpus": ["cuda:0", "cuda:1"],
     "dataset_directory": "/home/shared/data",
-    "db_loc": "/home/shared/streamline/obj_det_copy/zdeleteme/streamline_db.db",
-    "base_exp_directory": "/home/shared/streamline/obj_det_copy/zdeleteme/large_objects/",
+    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
+    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
     "distil_directory": "../distil",
-    "experiments": [["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "lm_streamline_det_fl2mi_fl", 50, 250, 1000, 64, 5, 1],
-                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "lm_streamline_det_fl2mi_logdet", 50, 250, 1000, 64, 5, 1],
-                    ["BDD100K", "faster_rcnn", 1, "rare_beginning", 0, "bdd100k_train", "entropy_det", 50, 250, 1000, 64, 5, 1]]
+    "experiments": [["BDD100K", "faster_rcnn", 0, "rare_every_3", 0, "bdd100k_train", "ulm_streamline_det_fl2mi_flcg", 250, 500, 4000, 64, 10, 0],
+                    ["BDD100K", "faster_rcnn", 0, "rare_every_3", 0, "bdd100k_train", "margin_det", 250, 500, 4000, 64, 10, 0]]
 }

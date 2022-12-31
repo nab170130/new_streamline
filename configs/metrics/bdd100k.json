@@ -1,19 +1,15 @@
 {
-    "gpus": ["cuda:0", "cuda:1", "cuda:2"],
+    "gpus": ["cuda:0", "cuda:1", "cuda:2", "cuda:3"],
     "batch_size": 32,
     "dataset_directory": "/home/shared/data",
-    "db_loc": "/home/shared/streamline/obj_det_copy/zdeleteme/streamline_db.db",
-    "base_exp_directory": "/home/shared/streamline/obj_det_copy/zdeleteme/large_objects/",
+    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
+    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
     "distil_directory": "../distil",
     "metrics": [["BDD100K", "mAP", "BDD100K"],
                 ["BDD100K", "per_task_mAP_0", "BDD100K"],
                 ["BDD100K", "per_task_mAP_1", "BDD100K"],
-                ["BDD100K", "per_task_mAP_2", "BDD100K"],
-                ["BDD100K", "per_task_mAP_3", "BDD100K"],
                 ["BDD100K", "labeled_instances", "BDD100K"],
                 ["BDD100K", "task_identification_accuracy", "BDD100K"],
                 ["BDD100K", "task_presence_0", "BDD100K"],
-                ["BDD100K", "task_presence_1", "BDD100K"],
-                ["BDD100K", "task_presence_2", "BDD100K"],
-                ["BDD100K", "task_presence_3", "BDD100K"]]
+                ["BDD100K", "task_presence_1", "BDD100K"]]
 }
