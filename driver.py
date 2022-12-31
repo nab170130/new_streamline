@@ -144,20 +144,29 @@ if __name__ == "__main__":
         is_limited_mem  = experiment_arguments[2]
         training_loop   = experiment_arguments[5]
 
+        # If the dataset is KITTI*, Cityscapes*, or BDD100K, set the config location.
+        dataset_name = experiment_arguments[0]
+        if dataset_name.startswith("KITTI"):
+            obj_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_kitti_cocofmt.py"
+        elif dataset_name.startswith("Cityscapes"):
+            obj_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_cityscapes_cocofmt.py"
+        elif dataset_name.startswith("BDD100K"):
+            obj_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
+
         if is_limited_mem == 1:
-            if training_loop == "bdd100k_train":
+            if training_loop == "obj_det_train":
                 from streamline.experiments import LimitedMemoryDetectionExperiment
-                experiment_to_run = LimitedMemoryDetectionExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc)
+                experiment_to_run = LimitedMemoryDetectionExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc, obj_config_path)
             else:
                 from streamline.experiments import LimitedMemoryExperiment
-                experiment_to_run = LimitedMemoryExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc)           
+                experiment_to_run = LimitedMemoryExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc, obj_config_path)           
         elif is_limited_mem == 0:
-            if training_loop == "bdd100k_train":
+            if training_loop == "obj_det_train":
                 from streamline.experiments import UnlimitedMemoryDetectionExperiment
-                experiment_to_run = UnlimitedMemoryDetectionExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc)
+                experiment_to_run = UnlimitedMemoryDetectionExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc, obj_config_path)
             else:
                 from streamline.experiments import UnlimitedMemoryExperiment
-                experiment_to_run = UnlimitedMemoryExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc) 
+                experiment_to_run = UnlimitedMemoryExperiment(worker_lock, worker_sem, worker_side_pipe, gpu_to_assign, base_dataset_directory, base_exp_directory, db_loc, obj_config_path) 
 
         # Create and run a worker process
         worker_process = mp.Process(target=_worker_entry, args=(experiment_to_run, experiment_arguments, gpu_to_assign, gpu_availability_queue, distil_loc))

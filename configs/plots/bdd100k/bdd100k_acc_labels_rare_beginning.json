@@ -1,5 +1,5 @@
 {
-    "db_loc": "zdeleteme/streamline_db.db",
+    "db_loc": "not_as_old_results/streamline_db.db",
     "name": "bdd100k_acc_label_rare_beg",
     "type": "one_plot",
     "figsize": [10, 8],
@@ -9,12 +9,15 @@
     "y_axis_font_size": 20,
     "legend_font_size": 10,
     "x_axis_measure":   "labeled_instances",
-    "y_axis_measure":   "per_task_mAP_3",
+    "y_axis_measure":   "per_task_mAP_1",
     "train_dataset": "BDD100K",
     "model_architecture": "faster_rcnn",
-    "limited_mem": 1,
-    "arrival_pattern": "rare_beginning",
-    "max_plot_points": 8,
-    "experiments": [["bdd100k_train", "lm_streamline_det_fl2mi_fl", 125, 250, 500, "BDD100K", [1,0,0]],
-                    ["bdd100k_train", "lm_streamline_det_fl2mi_logdet", 125, 250, 500, "BDD100K", [1,1,0]]]
+    "limited_mem": 0,
+    "arrival_pattern": "rare_every_3",
+    "max_plot_points": 9,
+    "experiments": [["obj_det_train", "ulm_streamline_det_fl2mi_flcg", 250, 500, 4000, "BDD100K", [1,0,0]],
+                    ["obj_det_train", "margin_det", 250, 500, 4000, "BDD100K", [0,1,0]],
+                    ["obj_det_train", "entropy_det", 250, 500, 4000, "BDD100K", [0,0,1]],
+                    ["obj_det_train", "least_confidence_det", 250, 500, 4000, "BDD100K", [1,1,0]],
+                    ["obj_det_train", "random", 250, 500, 4000, "BDD100K", [0,1,1]]]
 }

@@ -14,106 +14,67 @@ from mmdet.datasets.api_wrappers import COCO
 
 import mmcv
 
-class BDD100K(Dataset):
+class KITTIFog(Dataset):
 
     def __init__(self, root_dir, train):
         self._initialize_dataset(root_dir, train)
 
 
-    def _create_per_attr_idx(self, full_dataset):
-        attribute_dict = {'weather': {'rainy': [], 'snowy':[], 'clear':[], 'overcast':[], 'undefined':[], 'partly cloudy':[], 'foggy':[]}, \
-                    'scene': {'tunnel':[], 'residential':[], 'parking lot':[], 'undefined':[], 'city street':[], 'gas stations':[], 'highway':[]}, \
-                    'timeofday': {'daytime':[], 'night':[], 'dawn/dusk':[], 'undefined':[]}}
-
-        # Go through each instance in the passed dataset. Add the index corresponding to this 
-        # instance to each of the above categories for each attribute.
-        for i in range(len(full_dataset)):
-            img_data = full_dataset.data_infos[i]
-            img_attr = img_data["attributes"]
-            attribute_dict['weather'][img_attr['weather']].append(i)
-            attribute_dict['scene'][img_attr['scene']].append(i)
-            attribute_dict['timeofday'][img_attr['timeofday']].append(i)
-
-        # Return the attribute dictionary, which classifies each index to a particular attribute category.
-        return attribute_dict
-
-
     def _initialize_dataset(self, root_dir, train):
 
-        # BDD100K requires different treatment. We will use MMDetection to load the base dataset based on the configs given in the utils folder.
-        bdd100k_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
-        bdd100k_config      = Config.fromfile(bdd100k_config_path)
+        # Initialize the modified KITTI annotations from COCO format. The annotations are laid out such that the latter half of 
+        # the image_id space corresponds to foggy images while the former half corresponds to the base images.
+        kitti_config_path   = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_kitti_cocofmt.py"
+        kitti_config        = Config.fromfile(kitti_config_path)
+
+        # These otherwise create the same dataset; however, if it's test, then use the test pipeline!
+        if train:
+            base_dataset        = build_dataset(kitti_config.data.train_fog['dataset'], None)
+        else:
+            base_dataset        = build_dataset(kitti_config.data.val_fog, None)
+
+        annotation_path     = os.path.join(root_dir, "kitti", "data_object", "training", "coco_annotations_foggy.json")
+
+        # As KITTI's test partition does not have label info, we need to evaluate on a split of the available training data. 
+        # Generate a reproducible random split of the data, having equal base / modified splits
+        torch.manual_seed(40)
+        np.random.seed(40)
+
+        per_task_size       = len(base_dataset) // 2
+        normal_idx_range    = list(range(per_task_size))
+        modified_idx_range  = list(range(per_task_size, len(base_dataset)))
+        
+        test_fraction = 0.2
+        chosen_test_fraction_size   = int(per_task_size * test_fraction)
+        normal_test_idx_split       = np.random.choice(normal_idx_range, size=chosen_test_fraction_size, replace=False).tolist()
+        normal_train_idx_split      = list(set(normal_idx_range) - set(normal_test_idx_split))
+        modified_test_idx_split     = np.random.choice(modified_idx_range, size=chosen_test_fraction_size, replace=False).tolist()
+        modified_train_idx_split    = list(set(modified_idx_range) - set(modified_test_idx_split))
+
+        new_seed = time.time_ns() % 1000000
+        torch.manual_seed(new_seed)
+        np.random.seed(new_seed)
 
         if train:
-            base_dataset    = build_dataset(bdd100k_config.data.train['dataset'], None)
-            annotation_path         = os.path.join(root_dir, "bdd_100k", "bdd100k", "labels", "det_20", "det_train_coco.json")
+            normal_idx_split    = normal_train_idx_split
+            modified_idx_split  = modified_train_idx_split 
         else:
-            base_dataset    = build_dataset(bdd100k_config.data.val, None)
-            annotation_path         = os.path.join(root_dir, "bdd_100k", "bdd100k", "labels", "det_20", "det_val_coco.json")
+            normal_idx_split    = normal_test_idx_split
+            modified_idx_split  = modified_test_idx_split
 
-        # Now that the base dataset is loaded, we shall create the task splits for each task. Here,
-        # we formulate reasonable tasks that an autonomous vehicle may encounter:
-        #
-        #       1.  Rainy city streets, daytime
-        #       2.  Clear city streets, nighttime
-        #       3.  Foggy highways, daytime
-        #       4.  Clear highways, nighttime
-        #       5.  Clear residential, daytime
-        #       6.  Clear residential, nighttime
-        #
-        # Before this is done, we first get an attribute dictionary that assigns each index to a particular attribute value
-        attribute_tuple_to_idx_dict = self._create_per_attr_idx(base_dataset)
+        base_mapping = []
+        base_mapping.extend(normal_idx_split)
+        base_mapping.extend(modified_idx_split)
 
-        task_attribute_tuples = ["daytime", "night"]
-
-        # Form each task partition idx by finding the intersection across each attribute value. This will be the behind-the-scenes
-        # mapping used for the BDD100k base dataset given here.
-        base_mapping_partitions = []
         task_idx_partitions = []
-        start_idx = 0
-        for time_attr in task_attribute_tuples:    
-            all_matching_time_idx       = set(attribute_tuple_to_idx_dict["timeofday"][time_attr])
-            intersection_idx            = list(all_matching_time_idx) 
-            end_idx                     = start_idx + len(intersection_idx)
-            base_mapping_partitions.append(intersection_idx)
-            task_idx_partition = list(range(start_idx, end_idx))
-            task_idx_partitions.append(task_idx_partition)
-            start_idx = end_idx
-
-        # If this is the test set, we need to ensure balance across tasks.
-        if not train:
-            torch.manual_seed(40)
-            np.random.seed(40)
-
-            # Choose enough instances from each task. Redo the task_idx_partitions.
-            min_task_test_size = min([len(x) for x in base_mapping_partitions])
-            task_idx_partitions = []
-            base_mapping = []
-            start_idx = 0
-            for base_mapping_partition in base_mapping_partitions:
-                end_idx = start_idx + min_task_test_size
-                selected_idx = np.random.choice(base_mapping_partition, size=min_task_test_size, replace=False).tolist()
-                task_idx_partition = list(range(start_idx, end_idx))
-                task_idx_partitions.append(task_idx_partition)
-                start_idx = end_idx
-                base_mapping.extend(selected_idx)
-
-            # Change seed after sampling using current unix time. Modulo to be within 2**32 - 1.
-            new_seed = time.time_ns() % 1000000
-            torch.manual_seed(new_seed)
-            np.random.seed(new_seed)
-
-        else:
-
-            base_mapping = []
-            for base_mapping_partition in base_mapping_partitions:
-                base_mapping.extend(base_mapping_partition)
-
+        task_idx_partitions.append(list(range(len(normal_idx_split))))
+        task_idx_partitions.append(list(range(len(normal_idx_split), len(normal_idx_split) + len(modified_idx_split))))
+        
         # Set fields for this object
         self.annotation_path        = annotation_path
-        self.base_mapping   = base_mapping
         self.task_idx_partitions    = task_idx_partitions
         self.base_dataset           = base_dataset
+        self.base_mapping           = base_mapping
         self.num_tasks              = len(task_idx_partitions)
         self.CLASSES                = self.base_dataset.CLASSES
         self._set_group_flag()
@@ -126,8 +87,8 @@ class BDD100K(Dataset):
         """
         self.flag = np.zeros(len(self), dtype=np.uint8)
         for i in range(len(self)):
-            base_idx        = self.base_mapping[i]
-            self.flag[i]    = self.base_dataset.flag[base_idx]
+            base_idx                = self.base_mapping[i]
+            self.flag[i]            = self.base_dataset.flag[base_idx]
 
 
     def get_task_number_and_index_in_task(self, index):
@@ -152,7 +113,7 @@ class BDD100K(Dataset):
 
 
     def __len__(self):
-        return len(self.base_mapping)   
+        return sum([len(x) for x in self.task_idx_partitions]) 
 
 
     def xyxy2xywh(self, bbox):
@@ -287,7 +248,6 @@ class BDD100K(Dataset):
 
         # Create a new json to store temporarily. It carries the same type and categories as the full annotation file
         result_gts_json = {}
-        result_gts_json["type"]         = all_anns["type"]
         result_gts_json["categories"]   = all_anns["categories"]
         result_gts_json["images"]       = []
         result_gts_json["annotations"]  = []

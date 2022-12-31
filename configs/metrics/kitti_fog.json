@@ -1,0 +1,15 @@
+{
+    "gpus": ["cuda:0", "cuda:1"],
+    "batch_size": 32,
+    "dataset_directory": "/home/013/s/sn/snk170001/streamline/data",
+    "db_loc": "/home/013/s/sn/snk170001/streamline/time/results/streamline_db.db",
+    "base_exp_directory": "/home/013/s/sn/snk170001/streamline/time/results/large_objects/",
+    "distil_directory": "../distil",
+    "metrics": [["KITTIFog", "mAP", "KITTIFog"],
+                ["KITTIFog", "per_task_mAP_0", "KITTIFog"],
+                ["KITTIFog", "per_task_mAP_1", "KITTIFog"],
+                ["KITTIFog", "labeled_instances", "KITTIFog"],
+                ["KITTIFog", "task_identification_accuracy", "KITTIFog"],
+                ["KITTIFog", "task_presence_0", "KITTIFog"],
+                ["KITTIFog", "task_presence_1", "KITTIFog"]]
+}

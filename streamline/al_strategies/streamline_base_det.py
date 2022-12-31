@@ -19,7 +19,7 @@ class StreamlineBaseDetection(Strategy, ABC):
         super(StreamlineBaseDetection, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
         self.num_tasks          = len(labeled_dataset.task_idx_partitions)
         self.cfg                = args["cfg"]
-        self.max_prop_obj_det   = 100
+        self.max_prop_obj_det   = 50
     
 
     def identify_task(self, full_sijs):
@@ -324,7 +324,7 @@ class StreamlineBaseDetection(Strategy, ABC):
                 # first image's objects are covered by the second's objects; the latter helps calculate how well
                 # the second image's objects are covered by the first objects.
                 nbatch_n_k_k_kern                                   = torch.tensordot(batch_normalized_features, normalized_feature_tensor, dims=([-1],[-1])).permute(0,2,1,3)
-                nbatch_n_avg_divisor_row                            = batch_proposal_nonzero_vector_counts.repeat(1,n)
+                nbatch_n_avg_divisor_row                            = batch_proposal_nonzero_vector_counts.reshape((-1,1)).repeat(1,n)
                 nbatch_n_avg_divisor_col                            = image_proposal_nonzero_vector_counts.repeat(nbatch,1)
                 nbatch_n_avg_max_row                                = torch.sum(torch.amax(nbatch_n_k_k_kern, dim=3), dim=2) / nbatch_n_avg_divisor_row
                 nbatch_n_avg_max_col                                = torch.sum(torch.amax(nbatch_n_k_k_kern, dim=2), dim=2) / nbatch_n_avg_divisor_col

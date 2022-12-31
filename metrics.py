@@ -116,7 +116,17 @@ if __name__ == "__main__":
             # Update the round x metric tuple to have the right eval dataset name.
             round_join_metric_list = list(round_join_metric_tuple)
             round_join_metric_list[-3] = eval_dataset_name
-            metric_factory = metrics.MetricFactory(db_loc, base_exp_directory, base_dataset_directory, gpu_to_assign, batch_size, round_join_metric_list)
+
+            if eval_dataset_name.startswith("KITTI"):
+                obj_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_kitti_cocofmt.py"
+            elif eval_dataset_name.startswith("Cityscapes"):
+                obj_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_cityscapes_cocofmt.py"
+            elif eval_dataset_name.startswith("BDD100K"):
+                obj_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
+            else:
+                obj_config_path = None
+
+            metric_factory = metrics.MetricFactory(db_loc, base_exp_directory, base_dataset_directory, gpu_to_assign, batch_size, round_join_metric_list, obj_config_path)
             metric = metric_factory.get_metric(metric_name)
         
             # Create and run a worker process
