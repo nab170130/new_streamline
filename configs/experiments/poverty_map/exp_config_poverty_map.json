@@ -1,0 +1,23 @@
+{
+    "gpus": ["cuda:0", "cuda:1"],
+    "dataset_directory": "/home/shared/data",
+    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
+    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
+    "distil_directory": "../distil",
+    "experiments": [["PovertyMap", "resnet18_8c", 0, "rare_every_3", 0, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 0, "cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 0, "cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 0, "cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 2, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 2, "cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 2, "cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 2, "cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 3, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 3, "cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 3, "cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, 32, 9, 1],
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 3, "cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, 32, 9, 1]]
+}

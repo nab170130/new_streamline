@@ -14,6 +14,7 @@ from .cityscapes_rain import CityscapesRain
 from .office_31 import Office31
 from .organ_mnist import OrganMNIST
 from .perm_mnist import PermutedMNIST
+from .povmap import PovertyMap
 from .rot_mnist import RotatedMNIST
 
 class DatasetFactory:
@@ -60,6 +61,12 @@ class DatasetFactory:
             test_transform = transforms.Compose([transforms.Resize((224,224)), transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
             full_train_dataset = FMOW(self.root_directory, train=True)
             nclasses = 62
+
+        elif dataset_name == "PovertyMap":
+
+            test_transform = transforms.Compose([])
+            full_train_dataset = PovertyMap(self.root_directory, train=True)
+            nclasses = 2
 
         elif dataset_name == "BDD100K":
 
@@ -132,6 +139,11 @@ class DatasetFactory:
 
             redundancy_factor = 1
             full_train_dataset = FMOW(self.root_directory, train=True)
+
+        elif dataset_name == "PovertyMap":
+
+            redundancy_factor = 1
+            full_train_dataset = PovertyMap(self.root_directory, train=True)
 
         elif dataset_name == "BDD100K":
 
@@ -216,6 +228,12 @@ class DatasetFactory:
             test_transform = transforms.Compose([transforms.Resize((224,224)), transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
             test_dataset = FMOW(self.root_directory, train=False, transform=test_transform)
             nclasses = 62
+
+        elif dataset_name == "PovertyMap":
+
+            test_transform = transforms.Compose([])
+            test_dataset = PovertyMap(self.root_directory, train=False, transform=test_transform)
+            nclasses = 2
 
         elif dataset_name == "BDD100K":
 

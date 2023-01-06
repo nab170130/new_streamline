@@ -21,6 +21,8 @@ class ModelFactory:
         
         if model_name.endswith("_1c"):
             channels = 1
+        elif model_name.endswith("8c"):
+            channels = 8
         else:
             channels = 3
 
