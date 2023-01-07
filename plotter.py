@@ -23,6 +23,8 @@ if __name__ == "__main__":
 
     if plotter_config["type"] == "one_plot":
         plotter = plots.OnePlotter(plotter_config)
+    elif plotter_config["type"] == "row_plot":
+        plotter = plots.RowPlotter(plotter_config)
     else:
         raise ValueError("Invalid plot type")
 

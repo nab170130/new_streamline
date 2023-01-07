@@ -1,0 +1,45 @@
+{
+    "name": "wilds_img_cls",
+    "type": "row_plot",
+    "figsize": [11, 6],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "gridspec_kw": {
+        "wspace": 0.2
+    },
+    "plot_1_1": {
+        "db_loc": "zdeleteme/streamline_db.db",
+        "x_axis_measure":   "labeled_instances",
+        "y_axis_measure":   "per_task_accuracy_1",
+        "x_axis_title":     "Labeled Instances",
+        "y_axis_title":     "Rare Task Accuracy",
+        "train_dataset": "PovertyMap",
+        "model_architecture": "resnet18_8c",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "max_plot_points": 15,
+        "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, "PovertyMap", [1,0,0], "x", "-"],
+                        ["cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, "PovertyMap", [0,1,0], "x", "-"],
+                        ["cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, "PovertyMap", [0,0,1], "x", "-"],
+                        ["cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, "PovertyMap", [0,1,1], "x", "-"]]
+    },
+    "plot_1_2": {
+        "db_loc": "zdeleteme/streamline_db.db",
+        "x_axis_measure":   "labeled_instances",
+        "y_axis_measure":   "per_task_accuracy_3",
+        "x_axis_title":     "Labeled Instances",
+        "y_axis_title":     "Rare Task Accuracy",
+        "train_dataset": "IWildCam",
+        "model_architecture": "densenet161",
+        "limited_mem": 0,
+        "arrival_pattern": "sequential",
+        "max_plot_points": 15,
+        "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 250, 500, 4000, "IWildCam", [1,0,0], "x", "-"],
+                        ["cross_entropy_sgd_rand_flips", "badge", 250, 500, 4000, "IWildCam", [0,1,0], "x", "-"],
+                        ["cross_entropy_sgd_rand_flips", "random", 250, 500, 4000, "IWildCam", [0,0,1], "x", "-"],
+                        ["cross_entropy_sgd_rand_flips", "entropy", 250, 500, 4000, "IWildCam", [0,1,1], "x", "-"]]
+    }
+}

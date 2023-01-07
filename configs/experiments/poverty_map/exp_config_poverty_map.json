@@ -11,13 +11,5 @@
                     ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, 32, 9, 1],
                     ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, 32, 9, 1],
                     ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 2, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 2, "cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 2, "cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 2, "cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 3, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 3, "cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 3, "cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, 32, 9, 1],
-                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 3, "cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, 32, 9, 1]]
+                    ["PovertyMap", "resnet18_8c", 0, "rare_every_3", 1, "cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, 32, 9, 1]]
 }
