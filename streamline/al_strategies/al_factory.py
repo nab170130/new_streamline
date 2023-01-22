@@ -1,5 +1,5 @@
 from distil.active_learning_strategies import   BADGE, CoreSet, EntropySampling, FASS, GLISTER, LeastConfidenceSampling, \
-                                                MarginSampling, PartitionStrategy, RandomSampling, GradMatchActive
+                                                MarginSampling, PartitionStrategy, RandomSampling, GradMatchActive, SubmodularSampling
 
 from .reservoir_wrapper import ReservoirWrapperStrategy
 from .part_reservoir_wrapper import PartitionReservoirWrapperStrategy
@@ -8,6 +8,7 @@ from .simple_unlim_wrapper import SimpleUnlimitedMemoryWrapperStrategy
 from .entropy_det import EntropyDetection
 from .least_confidence_det import LeastConfidenceDetection
 from .margin_det import MarginDetection
+from .submod_det import SubmodularDet
 
 from .lim_mem_streamline import LimitedMemoryStreamline
 from .lim_mem_streamline_det import LimitedMemoryStreamlineDetection
@@ -33,6 +34,8 @@ class ALFactory:
             strategy_class = MarginDetection
         elif al_name.startswith("least_confidence_det"):
             strategy_class = LeastConfidenceDetection
+        elif al_name.startswith("submodular_det"):
+            strategy_class = SubmodularDet
         elif al_name.startswith("lm_streamline_det"):
             strategy_class = LimitedMemoryStreamlineDetection
             smi_function = al_name.split("_")[3]
@@ -116,7 +119,9 @@ class ALFactory:
         elif al_name.startswith("margin"):
             strategy_class = MarginSampling
         elif al_name.startswith("random"):
-            strategy_class = RandomSampling     
+            strategy_class = RandomSampling
+        elif al_name.startswith("submodular"):
+            strategy_class = SubmodularSampling
         else:
             raise ValueError(F"AL strategy {al_name} not supported")
             
