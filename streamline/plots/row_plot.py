@@ -12,6 +12,7 @@ class RowPlotter(BasePlotter):
     def __init__(self, plotter_config):
         super(RowPlotter, self).__init__(plotter_config)
         self.line_mapping = {}
+        self.set_defaults()
 
 
     def plot_one_cell(self, current_axis, row_num, col_num):
@@ -39,13 +40,17 @@ class RowPlotter(BasePlotter):
         current_axis[row_num][col_num].set_xlabel(r"\textbf{" + x_axis_label + "}", fontsize=self.plotter_config["x_axis_font_size"], fontfamily=self.plotter_config["font"])
         current_axis[row_num][col_num].set_ylabel(r"\textbf{" + y_axis_label + "}", fontsize=self.plotter_config["y_axis_font_size"], fontfamily=self.plotter_config["font"])
 
-        for training_loop, al_method, al_budget, init_task_size, unl_buffer_size, eval_dataset, color, point_style, line_style in plot_config["experiments"]:
+        for training_loop, al_method, al_budget, init_task_size, unl_buffer_size, eval_dataset, color, point_style, line_style, line_name in plot_config["experiments"]:
             
             # Get the metrics for the x axis and the y axis. Additionally, conform them to the same length.
             y_axis_avg, y_axis_std  = self.get_avg_std_metric_list(db_loc, train_dataset, model_architecture, limited_mem, arrival_pattern, training_loop, 
                                                                     al_method, al_budget, init_task_size, unl_buffer_size, y_axis_metric, eval_dataset, max_plot_points)
             x_axis_avg, _           = self.get_avg_std_metric_list(db_loc, train_dataset, model_architecture, limited_mem, arrival_pattern, training_loop, 
                                                                     al_method, al_budget, init_task_size, unl_buffer_size, x_axis_metric, eval_dataset, max_plot_points)
+
+            # Set the xticks to be x_axis_avg if not streamline, which is the only method that will differ. Do every other value.
+            if "streamline" not in al_method:
+                current_axis[row_num][col_num].set_xticks([x for i,x in enumerate(x_axis_avg) if i % 2 == 0])
 
             conformed_length = min(y_axis_avg.shape[0], x_axis_avg.shape[0])
             x_axis_avg = x_axis_avg[:conformed_length]
@@ -56,11 +61,17 @@ class RowPlotter(BasePlotter):
             y_metric_below = y_axis_avg - y_axis_std
             y_metric_above = y_axis_avg + y_axis_std
 
-            line_for_legend = current_axis[row_num][col_num].plot(x_axis_avg, y_axis_avg, color=color, label=al_method, marker=point_style, linestyle=line_style)[0]
-            current_axis[row_num][col_num].fill_between(x_axis_avg, y_metric_below, y_metric_above, color=color, label=al_method, alpha=0.3)
+            line_name = r"\textsc{" + line_name + r"}"
 
-            if (training_loop, al_method) not in self.line_mapping:
-                self.line_mapping[(training_loop, al_method)] = line_for_legend
+            line_for_legend = current_axis[row_num][col_num].plot(x_axis_avg, y_axis_avg, color=color, label=line_name, marker=point_style, linestyle=line_style)[0]
+            current_axis[row_num][col_num].fill_between(x_axis_avg, y_metric_below, y_metric_above, color=color, label=line_name, alpha=0.3)
+
+            if line_name not in self.line_mapping:
+                self.line_mapping[line_name] = line_for_legend
+
+        # Place grid
+        current_axis[row_num][col_num].grid(axis="y", linestyle="-", linewidth=1)
+        current_axis[row_num][col_num].grid(axis="x", linestyle="-", linewidth=1)
 
 
     def set_defaults(self):
@@ -72,11 +83,8 @@ class RowPlotter(BasePlotter):
         plt.rc('xtick', labelsize=18)
         plt.rc('ytick', labelsize=18)
         matplotlib.rc('text', usetex=True)
-        matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{amsmath,amsfonts}"]
-        matplotlib.rcParams['text.latex.preamble']=[r"\usepackage{bm}"]
         plt.rc('axes', linewidth=1)
         plt.rc('font', weight='bold')
-        matplotlib.rcParams['text.latex.preamble'] = [r'\boldmath']
 
 
     def produce_plot(self):
@@ -89,7 +97,7 @@ class RowPlotter(BasePlotter):
                 _, row_num, col_num = plot_attr.split("_")
                 num_rows = max(int(row_num), num_rows)
                 num_cols = max(int(col_num), num_cols)
-        fig, axes = plt.subplots(num_rows, num_cols, figsize=self.plotter_config["figsize"], squeeze=False)
+        fig, axes = plt.subplots(num_rows, num_cols, figsize=self.plotter_config["figsize"], squeeze=False, gridspec_kw=self.plotter_config["gridspec_kw"])
 
         # Plot each cell
         for row in range(1, num_rows + 1):
@@ -100,8 +108,8 @@ class RowPlotter(BasePlotter):
         # Prepare the legend
         lines = []
         num_methods = len(self.line_mapping.keys())
-        for training_loop, al_method in self.line_mapping:
-            line = self.line_mapping[(training_loop, al_method)]
+        for line_name in self.line_mapping:
+            line = self.line_mapping[line_name]
             lines.append(line)
         fig.legend(handles=lines, loc="upper center", ncol=num_methods, fontsize=self.plotter_config["legend_font_size"])
 
