@@ -1,6 +1,5 @@
 *.pyc
 *.png
-*.json
 zdeleteme
 results
 not_as_old_results
