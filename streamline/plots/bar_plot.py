@@ -85,7 +85,7 @@ class BarPlotter(BasePlotter):
         x           = np.arange(len(streamline_vals))
         bar_width   = self.plotter_config["bar_width"]
         bars = plt.bar(x - bar_width/2, streamline_vals, bar_width, label=r"\textsc{Streamline}", zorder=3, color=(0, 0.6, 0))
-        plt.bar(x + bar_width/2, other_vals, bar_width, label=r"\textsc{Other}", zorder=3, color=(0.8, 0, 0))
+        plt.bar(x + bar_width/2, other_vals, bar_width, label=r"\textsc{Next Best Baseline}", zorder=3, color=(0.8, 0, 0))
         plt.ylabel(r"\textbf{Labeling Efficiency}", fontsize=self.plotter_config["y_axis_font_size"], fontfamily=self.plotter_config["font"])
         plt.xticks(x, [r"\textbf{" + lab + "}\n(" + r"\textbf{" + str(val) + "})" for lab, val in zip(dataset_labels, met_vals)], fontsize=20)
         plt.legend(fontsize=self.plotter_config["legend_font_size"])

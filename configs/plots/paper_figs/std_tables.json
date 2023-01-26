@@ -69,5 +69,17 @@
                         ["obj_det_train", "least_confidence_det", 250, 500, 4000, "KITTIFog", "Least Conf."],
                         ["obj_det_train", "submodular_det", 250, 500, 4000, "KITTIFog", "Submodular"],
                         ["obj_det_train", "random", 250, 500, 4000, "KITTIFog", "Random"]]
+    },
+    "table_6": {
+        "db_loc": "zdeleteme/streamline_db.db",
+        "measure":   "per_task_accuracy_1",
+        "train_dataset": "PovertyMap",
+        "model_architecture": "resnet18_8c",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", "Streamline"],
+                        ["cross_entropy_sgd_rand_flips", "ablated_budget_ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", "No budget"],
+                        ["cross_entropy_sgd_rand_flips", "ablated_scg_ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", "No scg"],
+                        ["cross_entropy_sgd_rand_flips", "submodular", 500, 1000, 3000, "PovertyMap", "Submodular"]]
     }
 }
