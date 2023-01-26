@@ -1,0 +1,73 @@
+{
+    "name": "std_table",
+    "type": "std_table",
+    "font": "sans_serif",
+    "table_1": {
+        "db_loc": "zdeleteme/streamline_db.db",
+        "measure":   "per_task_accuracy_1",
+        "train_dataset": "PovertyMap",
+        "model_architecture": "resnet18_8c",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", "Streamline"],
+                        ["cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, "PovertyMap", "Badge"],
+                        ["cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, "PovertyMap", "Random"],
+                        ["cross_entropy_sgd_rand_flips", "submodular", 500, 1000, 3000, "PovertyMap", "Submodular"],
+                        ["cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, "PovertyMap", "Entropy"]]
+    },
+    "table_2": {
+        "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
+        "measure":   "per_task_accuracy_3",
+        "train_dataset": "IWildCam",
+        "model_architecture": "densenet161",
+        "limited_mem": 0,
+        "arrival_pattern": "sequential",
+        "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 250, 500, 4000, "IWildCam", "Streamline"],
+                        ["cross_entropy_sgd_rand_flips", "badge", 250, 500, 4000, "IWildCam", "Badge"],
+                        ["cross_entropy_sgd_rand_flips", "random", 250, 500, 4000, "IWildCam", "Random"],
+                        ["cross_entropy_sgd_rand_flips", "submodular", 250, 500, 4000, "IWildCam", "Submodular"],
+                        ["cross_entropy_sgd_rand_flips", "entropy", 250, 500, 4000, "IWildCam", "Entropy"]]
+    },
+    "table_3": {
+        "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
+        "measure":   "per_task_mAP_1",
+        "train_dataset": "BDD100K",
+        "model_architecture": "faster_rcnn",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "experiments": [["obj_det_train", "ulm_streamline_det_fl2mi_flcg", 250, 500, 4000, "BDD100K", "Streamline"],
+                        ["obj_det_train", "entropy_det", 250, 500, 4000, "BDD100K", "Entropy"],
+                        ["obj_det_train", "margin_det", 250, 500, 4000, "BDD100K", "Margin"],
+                        ["obj_det_train", "least_confidence_det", 250, 500, 4000, "BDD100K", "Least Conf."],
+                        ["obj_det_train", "submodular_det", 250, 500, 4000, "BDD100K", "Submodular"],
+                        ["obj_det_train", "random", 250, 500, 4000, "BDD100K", "Random"]]
+    },
+    "table_4": {
+        "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
+        "measure":   "per_task_mAP_1",
+        "train_dataset": "CityscapesRain",
+        "model_architecture": "faster_rcnn",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "experiments": [["obj_det_train", "ulm_streamline_det_fl2mi_flcg", 200, 400, 2000, "CityscapesRain", "Streamline"],
+                        ["obj_det_train", "entropy_det", 200, 400, 2000, "CityscapesRain", "Entropy"],
+                        ["obj_det_train", "margin_det", 200, 400, 2000, "CityscapesRain", "Margin"],
+                        ["obj_det_train", "least_confidence_det", 200, 400, 2000, "CityscapesRain", "Least Conf."],
+                        ["obj_det_train", "submodular_det", 200, 400, 2000, "CityscapesRain", "Submodular"],
+                        ["obj_det_train", "random", 200, 400, 2000, "CityscapesRain", "Random"]]
+    },
+    "table_5": {
+        "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
+        "measure":   "per_task_mAP_1",
+        "train_dataset": "KITTIFog",
+        "model_architecture": "faster_rcnn",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "experiments": [["obj_det_train", "ulm_streamline_det_fl2mi_flcg", 250, 500, 4000, "KITTIFog", "Streamline"],
+                        ["obj_det_train", "entropy_det", 250, 500, 4000, "KITTIFog", "Entropy"],
+                        ["obj_det_train", "margin_det", 250, 500, 4000, "KITTIFog", "Margin"],
+                        ["obj_det_train", "least_confidence_det", 250, 500, 4000, "KITTIFog", "Least Conf."],
+                        ["obj_det_train", "submodular_det", 250, 500, 4000, "KITTIFog", "Submodular"],
+                        ["obj_det_train", "random", 250, 500, 4000, "KITTIFog", "Random"]]
+    }
+}

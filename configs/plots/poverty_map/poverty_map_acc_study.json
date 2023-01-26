@@ -1,0 +1,20 @@
+{
+    "db_loc": "zdeleteme/streamline_db.db",
+    "name": "povmap_rare_task_acc_study",
+    "type": "one_plot",
+    "figsize": [10, 8],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "x_axis_measure":   "al_round",
+    "y_axis_measure":   "per_task_accuracy_1",
+    "train_dataset": "PovertyMap",
+    "model_architecture": "resnet18_8c",
+    "limited_mem": 0,
+    "arrival_pattern": "rare_every_3",
+    "max_plot_points": 15,
+    "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, "PovertyMap", [1,0,0]],
+                    ["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_rbf", 500, 1000, 3000, "PovertyMap", [0,1,0]]]
+}
