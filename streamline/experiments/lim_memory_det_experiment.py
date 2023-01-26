@@ -8,7 +8,7 @@ from ..training_loops import TrainingLoopFactory
 from ..utils import sample_sequential_access_chain, sample_rare_access_chain, sample_random_access_chain
 
 from mmcv import Config
-from mmdet.apis import init_detector
+from mmcv.runner import load_checkpoint
 
 import json
 import numpy as np
@@ -90,12 +90,15 @@ class LimitedMemoryDetectionExperiment(Experiment):
 
         # Get the task arrival pattern sequence information
         num_tasks = len(full_train_dataset.task_idx_partitions)
-        if arrival_pattern == "random":
-            task_arrival_pattern = sample_random_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "rare":
-            task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "sequential":
+        if arrival_pattern == "sequential":
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
+        elif arrival_pattern.startswith("rare_every"):
+            every_mod = int(arrival_pattern.split("_")[2])
+            task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
+            start_idx = 1 + every_mod
+            while start_idx < len(task_arrival_pattern):
+                task_arrival_pattern[start_idx] = num_tasks - 1
+                start_idx = start_idx + every_mod
         else:
             raise ValueError("Unknown arrival pattern")
 
@@ -108,14 +111,16 @@ class LimitedMemoryDetectionExperiment(Experiment):
             if self.round_number >= num_rounds:
                 return
 
-            train_split_partitions = train_unlabeled_split["train"]
-            unlabeled_split_partitions = train_unlabeled_split["unlabeled"]
+            train_split_partitions      = train_unlabeled_split["train"]
+            unlabeled_split_partitions  = train_unlabeled_split["unlabeled"]
 
             # Before creating the unlabeled dataset, we need to sample randomly from the unlabeled partition corresponding to the task
-            # arrival pattern.
+            # arrival pattern. SET REDUNDANCY FACTOR TO MATCH IN datasets/datasets.py
+            redundancy_factor = 2   # SET TO MATCH
             arriving_task = task_arrival_pattern[self.round_number]
             unlabeled_buffer_size = min(len(unlabeled_split_partitions[arriving_task]), unl_buffer_size)
-            randomly_chosen_task_unlabeled_idx = np.random.choice(unlabeled_split_partitions[arriving_task], size=unlabeled_buffer_size, replace=False).tolist()
+            randomly_chosen_task_unlabeled_idx = np.random.choice(unlabeled_split_partitions[arriving_task], size=unlabeled_buffer_size // redundancy_factor, replace=False).tolist()
+            randomly_chosen_task_unlabeled_idx = randomly_chosen_task_unlabeled_idx * redundancy_factor
             round_unlabeled_task_idx_partitions = [[] for x in range(num_tasks)]
             round_unlabeled_task_idx_partitions[arriving_task] = randomly_chosen_task_unlabeled_idx
 
@@ -252,7 +257,8 @@ class LimitedMemoryDetectionExperiment(Experiment):
         latest_epoch = -1
         for filename in all_saved_weights:
             if filename.startswith("epoch_"):
-                latest_epoch = max(int(filename[6]), latest_epoch)
+                epoch_num       = int(filename.split("_")[1].split(".pth")[0])
+                latest_epoch    = max(epoch_num, latest_epoch)
 
         for filename in all_saved_weights:
             if filename != "latest.pth" and filename != F"epoch_{latest_epoch}.pth":
@@ -318,12 +324,16 @@ class LimitedMemoryDetectionExperiment(Experiment):
         full_train_dataset, test_transform, num_classes = dataset_factory.get_dataset(train_dataset_name)
 
         # Get the model. However, if there is a checkpoint we need to be loading from, initialize the model with those weights.
+        pretrain_weight_directory = os.path.join(self.base_exp_directory, "weights")
+        model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory)
+        model = model_factory.get_model(model_architecture_name)
+
         if os.path.exists(abs_latest_chkpt_path):
-            model = init_detector(bdd100k_config, checkpoint=abs_latest_chkpt_path, device=self.gpu_name, cfg_options=None)
-        else:
-            pretrain_weight_directory = os.path.join(self.base_exp_directory, "weights")
-            model_factory = ModelFactory(num_classes=num_classes, pretrain_weight_directory=pretrain_weight_directory)
-            model = model_factory.get_model(model_architecture_name)
+            checkpoint      = load_checkpoint(model, abs_latest_chkpt_path, map_location="cpu")
+            model.cfg       = bdd100k_config
+        
+        model.to(self.gpu_name)
+        model.eval()
         
         # Get a training loop using the provided data split
         train_split = train_unlabeled_dataset_split["train"]

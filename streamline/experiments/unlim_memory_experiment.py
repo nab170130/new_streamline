@@ -102,14 +102,18 @@ class UnlimitedMemoryExperiment(Experiment):
 
         # Get the task arrival pattern sequence information
         num_tasks = len(full_train_dataset.task_idx_partitions)
-        if arrival_pattern == "random":
-            task_arrival_pattern = sample_random_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "rare":
-            task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "sequential":
+        if arrival_pattern == "sequential":
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
+        elif arrival_pattern.startswith("rare_every"):
+            every_mod = int(arrival_pattern.split("_")[2])
+            task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
+            start_idx = 1 + every_mod
+            while start_idx < len(task_arrival_pattern):
+                task_arrival_pattern[start_idx] = num_tasks - 1
+                start_idx = start_idx + every_mod
         else:
             raise ValueError("Unknown arrival pattern")
+        print("TASK PATTERN", task_arrival_pattern)
 
         # If the training loop has non-negative epoch, then the round is not finished. Do not select and proceed to training.
         if round_training_loop.epoch < 0:
@@ -141,11 +145,14 @@ class UnlimitedMemoryExperiment(Experiment):
                 for al_param in prev_al_params:
                     if al_param.startswith("reservoir"):
                         al_params[al_param] = prev_al_params[al_param]
+            elif "ulm_streamline" in al_method_name:
+                al_params['acc_budget'] = prev_al_params['acc_budget'] if 'acc_budget' in prev_al_params else 0
             al_strategy_factory = ALFactory(train_dataset, unlabeled_dataset, model, num_classes, al_params)
             al_strategy = al_strategy_factory.get_strategy(al_method_name)
 
             # Do th AL selection.
-            selected_unlabeled_idx = al_strategy.select(al_budget)
+            selected_unlabeled_idx  = al_strategy.select(al_budget)
+            al_params               = al_strategy.args
 
             # selected_unlabeled_idx is a list of lists. It has num_tasks lists, and the elements 
             # in those lists are indices with respect to the unlabeled set. Hence, the zeroth list in 
@@ -174,6 +181,10 @@ class UnlimitedMemoryExperiment(Experiment):
             unlabeled_split = new_unlabeled_partitions
             train_unlabeled_split["train"] =        train_split
             train_unlabeled_split["unlabeled"] =    unlabeled_split
+
+            if "streamline" in al_method_name:
+                for task_num, smi_base_fraction in enumerate(al_strategy.smi_base_fractions):
+                    al_params[F"smi_base_fraction_{task_num}"] = smi_base_fraction
 
             # Get a training loop using the (new) training split
             train_callback = UnlimitedMemoryExperimentCallback(train_dataset_name, model_architecture_name, arrival_pattern, run_number, training_loop_name, al_method_name, al_budget, init_task_size, unl_buffer_size, \

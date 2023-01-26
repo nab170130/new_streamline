@@ -28,29 +28,28 @@ class LimitedMemoryStreamline(StreamlineBase):
         return obj_sijs
 
 
-    def get_optimizer(self, obj_sijs):
+    def get_optimizer(self, obj_sijs, metric='rbf'):
 
         # Extract some information for submodlib
         num_unlabeled_instances = len(self.unlabeled_dataset)
-        metric = self.args['metric'] if 'metric' in self.args else 'cosine'
 
         # Get the regular submodular function from each SMI variant.
-        if self.args['smi_function']=='fl1mi' or self.args['smi_function']=='fl2mi':
+        if self.args['obj_function']=='fl':
             obj_func = submodlib.FacilityLocationFunction(n=obj_sijs.shape[0],
                                                                 mode="dense",
                                                                 separate_rep=False,
                                                                 sijs=obj_sijs,
                                                                 metric=metric)
     
-        elif self.args['smi_function']=='gcmi':
+        elif self.args['obj_function']=='gc':
             lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 0.5
             obj_func = submodlib.GraphCutFunction(n=obj_sijs.shape[0],
                                                         mode="dense",
                                                         lambdaVal=lambdaVal,
-                                                        sijs=obj_sijs,
+                                                        ggsijs=obj_sijs,
                                                         metric=metric)
             
-        elif self.args['smi_function']=='logdetmi':
+        elif self.args['obj_function']=='logdet':
             lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 1
             obj_func = submodlib.LogDeterminantFunction(n=obj_sijs.shape[0],
                                                             mode="dense",
@@ -71,12 +70,16 @@ class LimitedMemoryStreamline(StreamlineBase):
 
         self.model.eval()
         
-        # Get the similarity kernel, which will be used for task identification and coreset selection
-        # Use the similarity kernel to identify the task
-        full_sijs       = self.calculate_kernel()
-        task_identity   = self.identify_task(full_sijs)
-        obj_sijs        = self.calculate_subkernel(full_sijs, task_identity)
-        optimizer       = self.get_optimizer(obj_sijs)
+        # Get the similarity kernel, which will be used for task identification. RBF is used as a 
+        # similarity measure for task identification while cosine similarity is used for selection.
+        self.args['embedding_type'] = "features"
+        full_sijs           = self.calculate_kernel(self.args['identification_metric'])
+        task_identity       = self.identify_task(full_sijs, self.args['identification_metric'])
+
+        # Calculate a subkernel based on the task identity.
+        full_sijs           = self.calculate_kernel(self.args['selection_metric'])
+        obj_sijs            = self.calculate_subkernel(full_sijs, task_identity)
+        optimizer           = self.get_optimizer(obj_sijs, self.args['selection_metric'])
 
         # Constraints are formed as follows:
         #   1. The number of unlabeled points cannot exceed the budget, so the unlabeled portion has a partition constraint of `budget`.

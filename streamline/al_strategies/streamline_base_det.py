@@ -4,8 +4,8 @@ from ..utils.lazy_greedy_matroid_opt import LazyGreedyMatroidPartitionOptimizer
 
 from distil.active_learning_strategies.strategy import Strategy
 from mmcv import Config
+from mmseg.apis import init_segmentor
 from mmdet.core import bbox2roi
-from mmseg.models import build_segmentor
 from mmseg.datasets import build_dataloader
 
 import submodlib
@@ -19,7 +19,7 @@ class StreamlineBaseDetection(Strategy, ABC):
         super(StreamlineBaseDetection, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
         self.num_tasks          = len(labeled_dataset.task_idx_partitions)
         self.cfg                = args["cfg"]
-        self.max_prop_obj_det   = 100
+        self.max_prop_obj_det   = 50
     
 
     def identify_task(self, full_sijs):
@@ -49,7 +49,22 @@ class StreamlineBaseDetection(Strategy, ABC):
             query_sijs = full_sijs[:num_unlabeled_instances,current_coreset_start_range:current_coreset_end_range]
             query_query_sijs = full_sijs[current_coreset_start_range:current_coreset_end_range,current_coreset_start_range:current_coreset_end_range]
 
-            if(self.args['smi_function']=='fl1mi'):
+            base_indices = list(range(num_unlabeled_instances))
+            base_indices.extend(range(current_coreset_start_range, current_coreset_end_range))
+            base_sijs = full_sijs[base_indices,:][:, base_indices]
+
+            if(self.args['smi_function']=='fl2mi'):
+                smi_obj = submodlib.FacilityLocationVariantMutualInformationFunction(n=num_unlabeled_instances,
+                                                                      num_queries=len(task_idx_partition), 
+                                                                      query_sijs=query_sijs, 
+                                                                      queryDiversityEta=eta)
+                base_obj = submodlib.FacilityLocationFunction(n=base_sijs.shape[0],
+                                                                mode="dense",
+                                                                separate_rep=False,
+                                                                sijs=base_sijs,
+                                                                metric=metric)
+                norm_factor = query_query_sijs.shape[0] + data_sijs.shape[0]
+            elif(self.args['smi_function']=='fl1mi'):
                 smi_obj = submodlib.FacilityLocationMutualInformationFunction(n=num_unlabeled_instances,
                                                                       num_queries=len(task_idx_partition), 
                                                                       data_sijs=data_sijs, 
@@ -60,7 +75,7 @@ class StreamlineBaseDetection(Strategy, ABC):
                                                                 separate_rep=False,
                                                                 sijs=full_sijs,
                                                                 metric=metric)
-        
+                norm_factor = query_query_sijs.shape[0] + data_sijs.shape[0]
             elif(self.args['smi_function']=='gcmi'):
                 lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 0.5
                 smi_obj = submodlib.GraphCutMutualInformationFunction(n=num_unlabeled_instances,
@@ -72,7 +87,7 @@ class StreamlineBaseDetection(Strategy, ABC):
                                                             lambdaVal=lambdaVal,
                                                             ggsijs=full_sijs,
                                                             metric=metric)
-                
+                norm_factor = query_query_sijs.shape[0] * data_sijs.shape[0]
             elif(self.args['smi_function']=='logdetmi'):
                 lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 1
                 smi_obj = submodlib.LogDeterminantMutualInformationFunction(n=num_unlabeled_instances,
@@ -87,18 +102,23 @@ class StreamlineBaseDetection(Strategy, ABC):
                                                                 lambdaVal=lambdaVal,
                                                                 sijs=full_sijs,
                                                                 metric=metric)
+                norm_factor = 1
 
             # Evaluate the smi objective function and the base objective function to get the fraction between the two.
             # Note that the submodular mutual information between two sets is always less than the base objective value
             # of each set (for monotonic functions).
             submodular_mutual_information_objective_value   = smi_obj.evaluate(set(range(len(self.unlabeled_dataset))))
-            base_objective_value                            = base_obj.evaluate(set(range(current_coreset_start_range, current_coreset_end_range)))
+            base_objective_value                            = base_obj.evaluate(set(range(num_unlabeled_instances, num_unlabeled_instances + len(task_idx_partition))))
+
+            print(F"FRAC {submodular_mutual_information_objective_value / norm_factor} ACTUAL TASK {self.unlabeled_dataset.get_task_number_and_index_in_task(0)[0]}")
 
             # Update the range for the next iteration
             current_coreset_start_range = current_coreset_end_range
 
             # Store the objective values
-            smi_base_fractions.append(submodular_mutual_information_objective_value / base_objective_value)
+            smi_base_fractions.append(submodular_mutual_information_objective_value / norm_factor)#base_objective_value)
+        
+        self.smi_base_fractions = smi_base_fractions
         
         # Determine which SMI-base fraction was the highest. We predict that the coreset with the highest fraction gives the task identity
         task_identity = None
@@ -108,23 +128,23 @@ class StreamlineBaseDetection(Strategy, ABC):
                 max_task_fraction = smi_base_fraction
                 task_identity = task_idx
 
+        print("I choose", task_identity, max_task_fraction)
+
         return task_identity
 
 
     def compute_sem_seg_features(self, dataset):
 
-        dataloader = build_dataloader(dataset, self.cfg["data"]["samples_per_gpu"], self.cfg["data"]["workers_per_gpu"], 
-                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"])
+        dataloader  = build_dataloader(dataset, self.cfg["data"]["samples_per_gpu"], self.cfg["data"]["workers_per_gpu"], 
+                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"], persistent_workers=False)
 
         # This method uses a pre-trained semantic segmentor to extract features at the image level.
         # Since segmentors use information about the full image when segmenting, the feature space 
         # induced by the backbone of the segmentor should be well-separated by scene information.
         # First, get the pre-trained segmentor via mmsegmentation
         psp_config_path         = "streamline/utils/mmseg_configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py"
-        psp_config              = Config.fromfile(psp_config_path)
-        model                   = build_segmentor(psp_config.model, train_cfg=psp_config.get('train_cfg'), test_cfg=psp_config.get('test_cfg'))
-        model.init_weights()
-        model                   = model.to(self.args["device"])
+        psp_pretrained_path     = "streamline/utils/mmseg_configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth"
+        model                   = init_segmentor(psp_config_path, psp_pretrained_path, device=self.args["device"])
         model.eval()
         
         # Use the model's backbone (and possibly a neck) to extract features from each image.
@@ -133,21 +153,22 @@ class StreamlineBaseDetection(Strategy, ABC):
             start_idx = 0
             for loaded_batch in dataloader:
                 end_idx = start_idx + loaded_batch['img'].data[0].shape[0]
+
+                # Do the model's forward pass util the last prediction layer.
                 batch_features = model.backbone(loaded_batch['img'].data[0].to(self.args["device"])) # post-aug collated batch tensor is in ['img'][0]
-                if model.with_neck:
-                    batch_features = model.neck(batch_features)
-                
+                batch_features = model.decode_head(batch_features)
+
                 # Batch features returns a 4-tuple of embeddings. We use the last embedding to get features. However, 
                 # these feature embeddings are quite large (2048 x 72 x 128), so we opt to reduce these by taking a
                 # max pool to reduce the spatial extent and to take an average over each channel to reduce the size
                 # to 2304-dimensional embeddings
-                max_pool_batch_features                 = torch.nn.functional.max_pool2d(batch_features[-1], kernel_size=2, stride=2, padding=0, dilation=1)
-                single_channel_max_pool_batch_features  = torch.mean(max_pool_batch_features, dim=1).flatten(1)
+                max_pool_batch_features                 = torch.nn.functional.max_pool2d(batch_features, kernel_size=16, stride=16, padding=0, dilation=1)
+                single_channel_max_pool_batch_features  = torch.flatten(max_pool_batch_features, 1)
                 if extracted_semantic_seg_features is None:
                     extracted_semantic_seg_features = torch.zeros(len(dataset), single_channel_max_pool_batch_features.shape[1])
                 extracted_semantic_seg_features[start_idx:end_idx] = single_channel_max_pool_batch_features
                 start_idx = end_idx
-        
+
         return extracted_semantic_seg_features
 
     
@@ -172,7 +193,7 @@ class StreamlineBaseDetection(Strategy, ABC):
     def compute_obj_det_features(self, dataset, gt_proposals=False):
 
         dataloader  = build_dataloader(dataset, self.cfg["data"]["samples_per_gpu"], self.cfg["data"]["workers_per_gpu"], 
-                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"])
+                                        num_gpus=1, dist=True, shuffle=False, seed=self.cfg["seed"], persistent_workers=False)
         model       = self.model.to(self.args["device"])
 
         # Here, we will be extracting the top-k proposal feature vectors for each image. Here, "top-k"
@@ -242,22 +263,19 @@ class StreamlineBaseDetection(Strategy, ABC):
 
         print("Computing semantic segmentation similarity kernel")
 
+        metric = self.args['metric'] if 'metric' in self.args else 'rbf'
+
         n, d = n_d_features.shape
 
-        # Normalize each of the N feature vectors. To do so, we compute each's norm, broadcast the N norms to a 
-        # compatible shape, and do elementwise division. Zero-vectors have zero norm, so to avoid division errors, we set
-        # such norms to 1 (which leaves the vector unchanged)
-        per_feature_vector_norm                             = torch.linalg.norm(n_d_features, dim=-1)[:,None]
-        per_feature_vector_norm[per_feature_vector_norm==0] = 1.
-        normalized_feature_tensor                           = n_d_features / per_feature_vector_norm
+        # Generate pairwise distances based on the embedding type. Here, we also attempt to normalize the distances to some degree
+        # so that most similarity values in the kernel do not vanish (e^-20, for example, may as well be 0).
+        pairwise_distances      = torch.cdist(n_d_features.to(self.device), n_d_features.to(self.device))
+        rbf_sig                 = torch.max(pairwise_distances) / 2     # Div by 4 so that the max distance has z-score of 4.
+        pw_square_distances     = torch.pow(pairwise_distances, 2)
+        norm_pw_sq_distances    = pw_square_distances / (2. * rbf_sig * rbf_sig)
+        full_sijs               = torch.exp(-norm_pw_sq_distances)
 
-        # Now, computing the similarity kernel simply is a matrix product between the normalized features
-        # and their transpose.
-        image_image_similarity_kernel = torch.matmul(normalized_feature_tensor, normalized_feature_tensor.T)
-
-        # Lastly, since the values of the computed kernel could be between -1 and 1, do a simple fix to ensure those ranges are between 0 and 1.
-        non_negative_image_image_similarity_kernel = (image_image_similarity_kernel + 1.) / 2.
-        return non_negative_image_image_similarity_kernel
+        return full_sijs
 
 
     def compute_obj_det_similarity_kernel(self, n_k_d_features):
@@ -299,13 +317,19 @@ class StreamlineBaseDetection(Strategy, ABC):
 
                 # Compute the cosine similarities between each of the k^2 proposals between each pair
                 # of images between the batch and the whole feature tensor. This is done by contracting
-                # along the last dimension (the d-dimensional feature vectors). Then, compute the mean of
-                # these similarities by only averaging those that do not correspond to zero-vector similarities.
+                # along the last dimension (the d-dimensional feature vectors). 
+                # 
+                # Next, the similarity of an image-image pair is computed by taking an average of the max over
+                # the columns and an average of the max over the rows. The former helps calculate how well the 
+                # first image's objects are covered by the second's objects; the latter helps calculate how well
+                # the second image's objects are covered by the first objects.
                 nbatch_n_k_k_kern                                   = torch.tensordot(batch_normalized_features, normalized_feature_tensor, dims=([-1],[-1])).permute(0,2,1,3)
-                nbatch_n_image_kern                                 = torch.sum(nbatch_n_k_k_kern, dim=(2,3)) 
-                nbatch_n_avg_denom                                  = torch.outer(batch_proposal_nonzero_vector_counts, image_proposal_nonzero_vector_counts)
-                nbatch_n_image_kern                                 = nbatch_n_image_kern / nbatch_n_avg_denom
-                image_image_similarity_kernel[start_idx:end_idx]    = nbatch_n_image_kern
+                nbatch_n_avg_divisor_row                            = batch_proposal_nonzero_vector_counts.reshape((-1,1)).repeat(1,n)
+                nbatch_n_avg_divisor_col                            = image_proposal_nonzero_vector_counts.repeat(nbatch,1)
+                nbatch_n_avg_max_row                                = torch.sum(torch.amax(nbatch_n_k_k_kern, dim=3), dim=2) / nbatch_n_avg_divisor_row
+                nbatch_n_avg_max_col                                = torch.sum(torch.amax(nbatch_n_k_k_kern, dim=2), dim=2) / nbatch_n_avg_divisor_col
+                nbatch_n_avg                                        = (nbatch_n_avg_max_row + nbatch_n_avg_max_col) / 2.
+                image_image_similarity_kernel[start_idx:end_idx]    = nbatch_n_avg
 
                 # Update the new start idx for the next iteration
                 pbar.update(end_idx - start_idx)

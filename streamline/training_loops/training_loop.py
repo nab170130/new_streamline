@@ -352,7 +352,7 @@ class TrainingLoopFactory:
             training_loop = ClassificationTrainingLoopVal(training_loop_name, self.training_dataset, train_transform, self.model, optimizer, lr_sched, 
                                                        loss_function, stopping_criteria, self.per_epoch_callback, self.args, self.validation_dataset)
 
-        elif training_loop_name == "bdd100k_train":
+        elif training_loop_name == "obj_det_train":
 
             # We want something that simply calls train_detector() once train() is called on the training loop.
             training_loop = DetectionTrainingLoop(self.training_dataset, self.model, self.args)

@@ -1,8 +1,0 @@
-{
-    "gpus": ["cuda:0"],
-    "dataset_directory": "/home/shared/data",
-    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
-    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
-    "distil_directory": "../distil",
-    "experiments": [["RotatedMNIST", "mnistnet", 0, "random", 0, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl1mi_oracle", 100, 100, 5000, 32, 2, 1]]
-}

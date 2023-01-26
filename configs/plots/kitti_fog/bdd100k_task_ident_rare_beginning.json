@@ -1,0 +1,19 @@
+{
+    "db_loc": "results/streamline_db.db",
+    "name": "bdd100k_acc_label_rare_beg",
+    "type": "one_plot",
+    "figsize": [10, 8],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "x_axis_measure":   "al_round",
+    "y_axis_measure":   "task_identification_accuracy",
+    "train_dataset": "BDD100K",
+    "model_architecture": "faster_rcnn",
+    "limited_mem": 0,
+    "arrival_pattern": "rare_every_3",
+    "max_plot_points": 9,
+    "experiments": [["bdd100k_train", "ulm_streamline_det_fl2mi_flcg", 100, 500, 4000, "BDD100K", [1,0,0]]]
+}

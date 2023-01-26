@@ -33,14 +33,14 @@ class LimitedMemoryStreamlineDetection(StreamlineBaseDetection):
         metric = self.args['metric'] if 'metric' in self.args else 'cosine'
 
         # Get the regular submodular function from each SMI variant.
-        if self.args['smi_function']=='fl1mi' or self.args['smi_function']=='fl2mi':
+        if self.args['obj_function']=='fl':
             obj_func = submodlib.FacilityLocationFunction(n=obj_sijs.shape[0],
                                                                 mode="dense",
                                                                 separate_rep=False,
                                                                 sijs=obj_sijs,
                                                                 metric=metric)
     
-        elif self.args['smi_function']=='gcmi':
+        elif self.args['obj_function']=='gc':
             lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 0.5
             obj_func = submodlib.GraphCutFunction(n=obj_sijs.shape[0],
                                                         mode="dense",
@@ -48,11 +48,10 @@ class LimitedMemoryStreamlineDetection(StreamlineBaseDetection):
                                                         sijs=obj_sijs,
                                                         metric=metric)
             
-        elif self.args['smi_function']=='logdetmi':
+        elif self.args['obj_function']=='logdet':
             lambdaVal = self.args['lambdaVal'] if 'lambdaVal' in self.args else 1
             obj_func = submodlib.LogDeterminantFunction(n=obj_sijs.shape[0],
                                                             mode="dense",
-                                                            separate_rep=False,
                                                             lambdaVal=lambdaVal,
                                                             sijs=obj_sijs,
                                                             metric=metric)

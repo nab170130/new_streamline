@@ -10,6 +10,7 @@ from ..utils import sample_sequential_access_chain, sample_rare_access_chain, sa
 import json
 import numpy as np
 import os
+import time
 import torch
 
 class LimitedMemoryExperiment(Experiment):
@@ -101,12 +102,15 @@ class LimitedMemoryExperiment(Experiment):
 
         # Get the task arrival pattern sequence information
         num_tasks = len(full_train_dataset.task_idx_partitions)
-        if arrival_pattern == "random":
-            task_arrival_pattern = sample_random_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "rare":
-            task_arrival_pattern = sample_rare_access_chain(num_tasks, num_rounds)
-        elif arrival_pattern == "sequential":
+        if arrival_pattern == "sequential":
             task_arrival_pattern = sample_sequential_access_chain(num_tasks, num_rounds)
+        elif arrival_pattern.startswith("rare_every"):
+            every_mod = int(arrival_pattern.split("_")[2])
+            task_arrival_pattern = sample_random_access_chain(num_tasks - 1, num_rounds)
+            start_idx = 1 + every_mod
+            while start_idx < len(task_arrival_pattern):
+                task_arrival_pattern[start_idx] = num_tasks - 1
+                start_idx = start_idx + every_mod
         else:
             raise ValueError("Unknown arrival pattern")
 
@@ -184,6 +188,9 @@ class LimitedMemoryExperiment(Experiment):
                 al_params["reservoir_counters"] = al_strategy.reservoir_counters
             elif al_method_name.endswith("reservoir"):
                 al_params["reservoir_counter"] = al_strategy.reservoir_counter
+            elif "streamline" in al_method_name:
+                for task_num, smi_base_fraction in enumerate(al_strategy.smi_base_fractions):
+                    al_params[F"smi_base_fraction_{task_num}"] = smi_base_fraction
 
             train_unlabeled_split["train"] =        train_split
             train_unlabeled_split["unlabeled"] =    unlabeled_split

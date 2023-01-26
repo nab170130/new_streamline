@@ -1,0 +1,20 @@
+{
+    "db_loc": "zdeleteme/streamline_db.db",
+    "name": "iwildcam_rare_task_acc_study",
+    "type": "one_plot",
+    "figsize": [10, 8],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 10,
+    "x_axis_measure":   "labeled_instances",
+    "y_axis_measure":   "per_task_accuracy_3",
+    "train_dataset": "IWildCam",
+    "model_architecture": "densenet161",
+    "limited_mem": 0,
+    "arrival_pattern": "sequential",
+    "max_plot_points": 15,
+    "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 250, 500, 4000, "IWildCam", [1,0,0]],
+                    ["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_rbf", 250, 500, 4000, "IWildCam", [0,1,0]]]
+}

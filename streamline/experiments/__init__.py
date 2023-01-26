@@ -2,3 +2,4 @@ from .experiment import Experiment
 from .lim_memory_experiment import LimitedMemoryExperiment, LimitedMemoryExperimentCallback
 from .lim_memory_det_experiment import LimitedMemoryDetectionExperiment
 from .unlim_memory_experiment import UnlimitedMemoryExperiment, UnlimitedMemoryExperimentCallback
+from .unlim_memory_det_experiment import UnlimitedMemoryDetectionExperiment

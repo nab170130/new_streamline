@@ -1,0 +1,19 @@
+{
+    "gpus": ["cuda:0", "cuda:1"],
+    "dataset_directory": "/home/013/s/sn/snk170001/streamline/data",
+    "db_loc": "/home/013/s/sn/snk170001/streamline/time/results/streamline_db.db",
+    "base_exp_directory": "/home/013/s/sn/snk170001/streamline/time/results/large_objects/",
+    "distil_directory": "../distil",
+    "experiments": [["KITTIFog", "faster_rcnn", 0, "rare_every_3", 0, "obj_det_train", "ulm_streamline_det_fl2mi_flcg", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 0, "obj_det_train", "margin_det", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 0, "obj_det_train", "entropy_det", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 0, "obj_det_train", "least_confidence_det", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 0, "obj_det_train", "submodular_det", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 0, "obj_det_train", "random", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 1, "obj_det_train", "ulm_streamline_det_fl2mi_flcg", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 1, "obj_det_train", "margin_det", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 1, "obj_det_train", "entropy_det", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 1, "obj_det_train", "least_confidence_det", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 1, "obj_det_train", "submodular_det", 250, 500, 4000, 64, 9, 0],
+                    ["KITTIFog", "faster_rcnn", 0, "rare_every_3", 1, "obj_det_train", "random", 250, 500, 4000, 64, 9, 0]]
+}

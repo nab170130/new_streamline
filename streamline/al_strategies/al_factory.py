@@ -1,5 +1,5 @@
 from distil.active_learning_strategies import   BADGE, CoreSet, EntropySampling, FASS, GLISTER, LeastConfidenceSampling, \
-                                                MarginSampling, PartitionStrategy, RandomSampling, GradMatchActive
+                                                MarginSampling, PartitionStrategy, RandomSampling, GradMatchActive, SubmodularSampling
 
 from .reservoir_wrapper import ReservoirWrapperStrategy
 from .part_reservoir_wrapper import PartitionReservoirWrapperStrategy
@@ -8,10 +8,13 @@ from .simple_unlim_wrapper import SimpleUnlimitedMemoryWrapperStrategy
 from .entropy_det import EntropyDetection
 from .least_confidence_det import LeastConfidenceDetection
 from .margin_det import MarginDetection
+from .submod_det import SubmodularDet
 
 from .lim_mem_streamline import LimitedMemoryStreamline
 from .lim_mem_streamline_det import LimitedMemoryStreamlineDetection
 from .unlim_mem_streamline import UnlimitedMemoryStreamline
+from .unlim_mem_streamline_ablated_budget import UnlimitedMemoryStreamlineAblatedBudget
+from .unlim_mem_streamline_ablated_scg import UnlimitedMemoryStreamlineAblatedSCG
 from .unlim_mem_streamline_det import UnlimitedMemoryStreamlineDetection
 
 
@@ -33,10 +36,14 @@ class ALFactory:
             strategy_class = MarginDetection
         elif al_name.startswith("least_confidence_det"):
             strategy_class = LeastConfidenceDetection
+        elif al_name.startswith("submodular_det"):
+            strategy_class = SubmodularDet
         elif al_name.startswith("lm_streamline_det"):
             strategy_class = LimitedMemoryStreamlineDetection
             smi_function = al_name.split("_")[3]
+            obj_function = al_name.split("_")[4]
             self.al_params["smi_function"] = smi_function
+            self.al_params["obj_function"] = obj_function
             if "oracle" in al_name:
                 self.al_params["oracle_task_identity"] = True
             else:
@@ -44,23 +51,65 @@ class ALFactory:
         elif al_name.startswith("ulm_streamline_det"):
             strategy_class = UnlimitedMemoryStreamlineDetection
             smi_function = al_name.split("_")[3]
+            obj_function = al_name.split("_")[4]
             self.al_params["smi_function"] = smi_function
+            self.al_params["obj_function"] = obj_function
             if "oracle" in al_name:
                 self.al_params["oracle_task_identity"] = True
             else:
                 self.al_params["oracle_task_identity"] = False
         elif al_name.startswith("lm_streamline"):
             strategy_class = LimitedMemoryStreamline
-            smi_function = al_name.split("_")[2]
-            self.al_params["smi_function"] = smi_function
+            smi_function            = al_name.split("_")[2]
+            identification_metric   = al_name.split("_")[3]
+            obj_function            = al_name.split("_")[4]
+            selection_metric        = al_name.split("_")[5]
+            self.al_params["smi_function"]          = smi_function
+            self.al_params["identification_metric"] = identification_metric
+            self.al_params["obj_function"]          = obj_function
+            self.al_params["selection_metric"]      = selection_metric
             if "oracle" in al_name:
                 self.al_params["oracle_task_identity"] = True
             else:
                 self.al_params["oracle_task_identity"] = False
         elif al_name.startswith("ulm_streamline"):
             strategy_class = UnlimitedMemoryStreamline
-            smi_function = al_name.split("_")[2]
-            self.al_params["smi_function"] = smi_function
+            smi_function            = al_name.split("_")[2]
+            identification_metric   = al_name.split("_")[3]
+            obj_function            = al_name.split("_")[4]
+            selection_metric        = al_name.split("_")[5]
+            self.al_params["smi_function"]          = smi_function
+            self.al_params["identification_metric"] = identification_metric
+            self.al_params["obj_function"]          = obj_function
+            self.al_params["selection_metric"]      = selection_metric
+            if "oracle" in al_name:
+                self.al_params["oracle_task_identity"] = True
+            else:
+                self.al_params["oracle_task_identity"] = False
+        elif al_name.startswith("ablated_budget_ulm_streamline"):
+            strategy_class = UnlimitedMemoryStreamlineAblatedBudget
+            smi_function            = al_name.split("_")[4]
+            identification_metric   = al_name.split("_")[5]
+            obj_function            = al_name.split("_")[6]
+            selection_metric        = al_name.split("_")[7]
+            self.al_params["smi_function"]          = smi_function
+            self.al_params["identification_metric"] = identification_metric
+            self.al_params["obj_function"]          = obj_function
+            self.al_params["selection_metric"]      = selection_metric
+            if "oracle" in al_name:
+                self.al_params["oracle_task_identity"] = True
+            else:
+                self.al_params["oracle_task_identity"] = False
+        elif al_name.startswith("ablated_scg_ulm_streamline"):
+            strategy_class = UnlimitedMemoryStreamlineAblatedSCG
+            smi_function            = al_name.split("_")[4]
+            identification_metric   = al_name.split("_")[5]
+            obj_function            = al_name.split("_")[6]
+            selection_metric        = al_name.split("_")[7]
+            self.al_params["smi_function"]          = smi_function
+            self.al_params["identification_metric"] = identification_metric
+            self.al_params["obj_function"]          = obj_function
+            self.al_params["selection_metric"]      = selection_metric
             if "oracle" in al_name:
                 self.al_params["oracle_task_identity"] = True
             else:
@@ -100,7 +149,9 @@ class ALFactory:
         elif al_name.startswith("margin"):
             strategy_class = MarginSampling
         elif al_name.startswith("random"):
-            strategy_class = RandomSampling     
+            strategy_class = RandomSampling
+        elif al_name.startswith("submodular"):
+            strategy_class = SubmodularSampling
         else:
             raise ValueError(F"AL strategy {al_name} not supported")
             

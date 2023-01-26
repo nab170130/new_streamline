@@ -1,4 +1,5 @@
 import json
+from multiprocessing.sharedctypes import Value
 import time
 import numpy as np
 import os
@@ -40,7 +41,7 @@ class BDD100K(Dataset):
     def _initialize_dataset(self, root_dir, train):
 
         # BDD100K requires different treatment. We will use MMDetection to load the base dataset based on the configs given in the utils folder.
-        bdd100k_config_path = "streamline/utils/mmdet_configs/bdd100k/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
+        bdd100k_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_bdd100k_cocofmt.py"
         bdd100k_config      = Config.fromfile(bdd100k_config_path)
 
         if train:
@@ -63,44 +64,39 @@ class BDD100K(Dataset):
         # Before this is done, we first get an attribute dictionary that assigns each index to a particular attribute value
         attribute_tuple_to_idx_dict = self._create_per_attr_idx(base_dataset)
 
-        task_attribute_tuples = [("clear", "city street", "daytime"),
-                                 ("clear", "city street", "night"),
-                                 ("rainy", "city street", "daytime"),
-                                 ("rainy", "city street", "night")]
-        
+        task_attribute_tuples = ["daytime", "night"]
+
         # Form each task partition idx by finding the intersection across each attribute value. This will be the behind-the-scenes
         # mapping used for the BDD100k base dataset given here.
-        bdd100k_base_mapping_partitions = []
+        base_mapping_partitions = []
         task_idx_partitions = []
         start_idx = 0
-        for weather_attr, scene_attr, time_attr in task_attribute_tuples:    
-            all_matching_weather_idx    = set(attribute_tuple_to_idx_dict["weather"][weather_attr])
-            all_matching_scene_idx      = set(attribute_tuple_to_idx_dict["scene"][scene_attr])
+        for time_attr in task_attribute_tuples:    
             all_matching_time_idx       = set(attribute_tuple_to_idx_dict["timeofday"][time_attr])
-            intersection_idx            = list(set.intersection(all_matching_weather_idx, all_matching_scene_idx, all_matching_time_idx))    
+            intersection_idx            = list(all_matching_time_idx) 
             end_idx                     = start_idx + len(intersection_idx)
-            bdd100k_base_mapping_partitions.append(intersection_idx)
+            base_mapping_partitions.append(intersection_idx)
             task_idx_partition = list(range(start_idx, end_idx))
             task_idx_partitions.append(task_idx_partition)
             start_idx = end_idx
-    
+
         # If this is the test set, we need to ensure balance across tasks.
         if not train:
             torch.manual_seed(40)
             np.random.seed(40)
 
             # Choose enough instances from each task. Redo the task_idx_partitions.
-            min_task_test_size = min([len(x) for x in bdd100k_base_mapping_partitions])
+            min_task_test_size = min([len(x) for x in base_mapping_partitions])
             task_idx_partitions = []
-            bdd100k_base_mapping = []
+            base_mapping = []
             start_idx = 0
-            for bdd100k_base_mapping_partition in bdd100k_base_mapping_partitions:
+            for base_mapping_partition in base_mapping_partitions:
                 end_idx = start_idx + min_task_test_size
-                selected_idx = np.random.choice(bdd100k_base_mapping_partition, size=min_task_test_size, replace=False).tolist()
+                selected_idx = np.random.choice(base_mapping_partition, size=min_task_test_size, replace=False).tolist()
                 task_idx_partition = list(range(start_idx, end_idx))
                 task_idx_partitions.append(task_idx_partition)
                 start_idx = end_idx
-                bdd100k_base_mapping.extend(selected_idx)
+                base_mapping.extend(selected_idx)
 
             # Change seed after sampling using current unix time. Modulo to be within 2**32 - 1.
             new_seed = time.time_ns() % 1000000
@@ -109,13 +105,13 @@ class BDD100K(Dataset):
 
         else:
 
-            bdd100k_base_mapping = []
-            for bdd100k_base_mapping_partition in bdd100k_base_mapping_partitions:
-                bdd100k_base_mapping.extend(bdd100k_base_mapping_partition)
+            base_mapping = []
+            for base_mapping_partition in base_mapping_partitions:
+                base_mapping.extend(base_mapping_partition)
 
         # Set fields for this object
         self.annotation_path        = annotation_path
-        self.bdd100k_base_mapping   = bdd100k_base_mapping
+        self.base_mapping   = base_mapping
         self.task_idx_partitions    = task_idx_partitions
         self.base_dataset           = base_dataset
         self.num_tasks              = len(task_idx_partitions)
@@ -130,7 +126,7 @@ class BDD100K(Dataset):
         """
         self.flag = np.zeros(len(self), dtype=np.uint8)
         for i in range(len(self)):
-            base_idx        = self.bdd100k_base_mapping[i]
+            base_idx        = self.base_mapping[i]
             self.flag[i]    = self.base_dataset.flag[base_idx]
 
 
@@ -149,14 +145,14 @@ class BDD100K(Dataset):
     def __getitem__(self, index):
         
         # Get the index that corresponds to the base bdd100k dataset used.
-        base_idx                = self.bdd100k_base_mapping[index]
+        base_idx                = self.base_mapping[index]
         instance                = self.base_dataset[base_idx]
 
         return instance
 
 
     def __len__(self):
-        return len(self.bdd100k_base_mapping)   
+        return len(self.base_mapping)   
 
 
     def xyxy2xywh(self, bbox):
@@ -184,7 +180,7 @@ class BDD100K(Dataset):
         for idx in range(len(self)):
             
             # Modification from mmdet: Map idx to base dataset index!
-            mapped_idx = self.bdd100k_base_mapping[idx]
+            mapped_idx = self.base_mapping[idx]
 
             img_id = self.base_dataset.img_ids[mapped_idx]
             bboxes = results[mapped_idx]
@@ -204,7 +200,7 @@ class BDD100K(Dataset):
         for idx in range(len(self)):
 
             # Modification from mmdet: Map idx to base dataset index!
-            mapped_idx = self.bdd100k_base_mapping[idx]
+            mapped_idx = self.base_mapping[idx]
 
             img_id = self.base_dataset.img_ids[mapped_idx]
             result = results[idx]
@@ -285,7 +281,7 @@ class BDD100K(Dataset):
 
         # Use the data_infos field to get only those image ids that are reference in the current dataset object
         referenced_image_ids = []
-        for mapped_idx in self.bdd100k_base_mapping:
+        for mapped_idx in self.base_mapping:
             referenced_id = self.base_dataset.data_infos[mapped_idx]["id"]
             referenced_image_ids.append(referenced_id)
 
