@@ -29,6 +29,8 @@ if __name__ == "__main__":
         plotter = plots.BarPlotter(plotter_config)
     elif plotter_config["type"] == "std_table":
         plotter = plots.STDTable(plotter_config)
+    elif plotter_config["type"] == "dist_plot":
+        plotter = plots.DistPlotter(plotter_config)
     else:
         raise ValueError("Invalid plot type")
     
