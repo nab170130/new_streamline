@@ -45,7 +45,7 @@ class UnlimitedMemoryStreamlineReplacedSCG(StreamlineBase):
         # IF the task is the rare task, then apply the accumulated budget to the base budget.
         # Otherwise, adjust the budget to be fair to task sizes.
         num_tasks           = len(self.labeled_dataset.task_idx_partitions)
-        min_budget_factor   = 0.5
+        min_budget_factor   = self.args["min_budget"]
         if task_identity == num_tasks - 1:
             avg_task_size           = sum([len(x) for x in self.labeled_dataset.task_idx_partitions[:num_tasks - 1]]) // (num_tasks - 1)    # Avg size of non-rare tasks
             avg_task_size_diff      = avg_task_size - len(self.labeled_dataset.task_idx_partitions[task_identity])

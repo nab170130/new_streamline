@@ -141,6 +141,11 @@ class UnlimitedMemoryExperiment(Experiment):
             # Form the AL strategy.
             replay_buffer_capacity = init_task_size * num_tasks
             al_params = {"device": self.gpu_name, "batch_size": batch_size, "lr": round_training_loop.optimizer.param_groups[0]['lr'], "buffer_capacity": replay_buffer_capacity}
+            
+            # To prevent rampant overfitting, tune the min-budget factor depending on the dataset.
+            if train_dataset_name == "PovertyMap" or train_dataset_name == "BDD100K":
+                al_params["min_budget"] = 0.75
+                
             if al_method_name.endswith("reservoir"):
                 for al_param in prev_al_params:
                     if al_param.startswith("reservoir"):

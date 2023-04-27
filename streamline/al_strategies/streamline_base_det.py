@@ -20,6 +20,9 @@ class StreamlineBaseDetection(Strategy, ABC):
         self.num_tasks          = len(labeled_dataset.task_idx_partitions)
         self.cfg                = args["cfg"]
         self.max_prop_obj_det   = 50
+
+        if "min_budget" not in args:
+            self.args["min_budget"] = 0.5
     
 
     def identify_task(self, full_sijs):
