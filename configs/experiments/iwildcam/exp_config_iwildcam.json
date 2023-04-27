@@ -1,8 +1,8 @@
 {
     "gpus": ["cuda:0", "cuda:1"],
-    "dataset_directory": "/home/shared/data",
-    "db_loc": "/home/nab170130/ACL/new_streamline/zdeleteme/streamline_db.db",
-    "base_exp_directory": "/home/nab170130/ACL/new_streamline/zdeleteme/large_objects/",
+    "dataset_directory": "/home/013/s/sn/snk170001/streamline/data",
+    "db_loc": "/home/013/s/sn/snk170001/streamline/time/not_as_old_results/streamline_db.db",
+    "base_exp_directory": "/home/013/s/sn/snk170001/streamline/time/not_as_old_results/large_objects/",
     "distil_directory": "../distil",
     "experiments": [["IWildCam", "densenet161", 0, "sequential", 0, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 250, 500, 4000, 32, 9, 1],
                     ["IWildCam", "densenet161", 0, "sequential", 0, "cross_entropy_sgd_rand_flips", "badge", 250, 500, 4000, 32, 9, 1],

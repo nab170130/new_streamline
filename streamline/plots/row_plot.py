@@ -35,9 +35,9 @@ class RowPlotter(BasePlotter):
         max_plot_points     = plot_config["max_plot_points"]
         
         # Create x, y
-        current_axis[row_num][col_num].set_title(r"\textbf{" + train_dataset + "}", fontsize=self.plotter_config["title_font_size"], fontfamily=self.plotter_config["font"])
-        current_axis[row_num][col_num].set_xlabel(r"\textbf{" + x_axis_label + "}", fontsize=self.plotter_config["x_axis_font_size"], fontfamily=self.plotter_config["font"])
-        current_axis[row_num][col_num].set_ylabel(r"\textbf{" + y_axis_label + "}", fontsize=self.plotter_config["y_axis_font_size"], fontfamily=self.plotter_config["font"])
+        current_axis[row_num][col_num].set_title(train_dataset, fontsize=self.plotter_config["title_font_size"], fontfamily=self.plotter_config["font"])
+        current_axis[row_num][col_num].set_xlabel(x_axis_label, fontsize=self.plotter_config["x_axis_font_size"], fontfamily=self.plotter_config["font"])
+        current_axis[row_num][col_num].set_ylabel(y_axis_label, fontsize=self.plotter_config["y_axis_font_size"], fontfamily=self.plotter_config["font"])
 
         for training_loop, al_method, al_budget, init_task_size, unl_buffer_size, eval_dataset, color, point_style, line_style in plot_config["experiments"]:
             
@@ -89,7 +89,7 @@ class RowPlotter(BasePlotter):
                 _, row_num, col_num = plot_attr.split("_")
                 num_rows = max(int(row_num), num_rows)
                 num_cols = max(int(col_num), num_cols)
-        fig, axes = plt.subplots(num_rows, num_cols, figsize=self.plotter_config["figsize"], squeeze=False)
+        fig, axes = plt.subplots(num_rows, num_cols, figsize=self.plotter_config["figsize"], squeeze=False, gridspec_kw=self.plotter_config["gridspec_kw"])
 
         # Plot each cell
         for row in range(1, num_rows + 1):

@@ -11,6 +11,7 @@ from .fmow import FMOW
 from .iwildcam import IWildCam
 from .kitti_fog import KITTIFog
 from .cityscapes_rain import CityscapesRain
+from .cityscapes_fog import CityscapesFog
 from .office_31 import Office31
 from .organ_mnist import OrganMNIST
 from .perm_mnist import PermutedMNIST
@@ -101,6 +102,17 @@ class DatasetFactory:
             test_transform      = cityscapes_config.test_pipeline
             nclasses            = len(cityscapes_config.CLASSES)
 
+        elif dataset_name == "CityscapesFog":
+
+            # To get the test transform, we simply load the config and get its test pipeline
+            cityscapes_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_cityscapes_cocofmt.py"
+            cityscapes_config      = Config.fromfile(cityscapes_config_path)
+
+            # Build the dataset using the train configuration
+            full_train_dataset  = CityscapesFog(self.root_directory, train=True)
+            test_transform      = cityscapes_config.test_pipeline
+            nclasses            = len(cityscapes_config.CLASSES)
+
         else:
 
             raise ValueError("Dataset not implemented!")
@@ -162,6 +174,12 @@ class DatasetFactory:
             # SET TO MATCH IN (un)lim_memory_det_experiment.py -- SAME FOR ALL OBJ DET.
             redundancy_factor = 2
             full_train_dataset  = CityscapesRain(self.root_directory, train=True)
+
+        elif dataset_name == "CityscapesFog":
+
+            # SET TO MATCH IN (un)lim_memory_det_experiment.py -- SAME FOR ALL OBJ DET.
+            redundancy_factor = 2
+            full_train_dataset  = CityscapesFog(self.root_directory, train=True)
 
         else:
 
@@ -266,6 +284,17 @@ class DatasetFactory:
             # Build the dataset using the train configuration
             test_transform  = cityscapes_config.test_pipeline
             test_dataset    = CityscapesRain(self.root_directory, train=False)
+            nclasses        = len(cityscapes_config.CLASSES)
+
+        elif dataset_name == "CityscapesFog":
+
+            # To get the test transform, we simply load the config and get its test pipeline
+            cityscapes_config_path = "streamline/utils/mmdet_configs/faster_rcnn_r50_fpn_1x_kitti_cocofmt.py"
+            cityscapes_config      = Config.fromfile(cityscapes_config_path)
+
+            # Build the dataset using the train configuration
+            test_transform  = cityscapes_config.test_pipeline
+            test_dataset    = CityscapesFog(self.root_directory, train=False)
             nclasses        = len(cityscapes_config.CLASSES)
 
         else:
