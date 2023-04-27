@@ -1,0 +1,44 @@
+{
+    "name": "intro_bar",
+    "type": "bar_plot",
+    "figsize": [7, 4],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 14,
+    "bar_width": 0.35,
+    "bar_1": {
+        "db_loc":   "zdeleteme/streamline_db.db",
+        "measure":  "per_task_accuracy_1",
+        "y_axis_title":     "Rare Slice Accuracy",
+        "train_dataset": "PovertyMap",
+        "model_architecture": "resnet18_8c",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "streamline":   ["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap"],
+        "other":        ["cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, "PovertyMap"]
+    },
+    "bar_2": {
+        "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
+        "measure":  "per_task_mAP_1",
+        "y_axis_title":     "Critical Slice mAP",
+        "train_dataset": "BDD100K",
+        "model_architecture": "faster_rcnn",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "streamline":   ["obj_det_train", "ulm_streamline_det_fl2mi_flcg", 250, 500, 4000, "BDD100K"],
+        "other":        ["obj_det_train", "submodular_det", 250, 500, 4000, "BDD100K"]
+    },
+    "bar_3": {
+        "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
+        "measure":  "per_task_mAP_1",
+        "y_axis_title":     "Critical Slice mAP",
+        "train_dataset": "KITTIFog",
+        "model_architecture": "faster_rcnn",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "streamline":   ["obj_det_train", "ulm_streamline_det_fl2mi_flcg", 250, 500, 4000, "KITTIFog"],
+        "other":        ["obj_det_train", "submodular_det", 250, 500, 4000, "KITTIFog"]
+    }
+}

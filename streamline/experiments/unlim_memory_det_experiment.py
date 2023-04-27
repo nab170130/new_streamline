@@ -134,8 +134,13 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
             obj_det_config                  = Config.fromfile(self.obj_det_config_path)
             obj_det_config['device']        = self.gpu_name.split(":")[0]
             obj_det_config['gpu_ids']       = [int(self.gpu_name.split(":")[1])]
-            obj_det_config["seed"]      = 0
+            obj_det_config["seed"]          = 0
             al_params = {"device": self.gpu_name, "batch_size": obj_det_config["data"]["samples_per_gpu"], "buffer_capacity": replay_buffer_capacity, "cfg": obj_det_config}
+
+            # To prevent rampant overfitting, tune the min-budget factor depending on the dataset.
+            if train_dataset_name == "PovertyMap" or train_dataset_name == "BDD100K":
+                al_params["min_budget"] = 0.75
+
             if al_method_name.endswith("reservoir"):
                 for al_param in prev_al_params:
                     if al_param.startswith("reservoir"):

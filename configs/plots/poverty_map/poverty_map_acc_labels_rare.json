@@ -15,7 +15,7 @@
     "limited_mem": 0,
     "arrival_pattern": "rare_every_3",
     "max_plot_points": 15,
-    "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 500, 1000, 3000, "PovertyMap", [1,0,0]],
+    "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", [1,0,0]],
                     ["cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, "PovertyMap", [0,1,0]],
                     ["cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, "PovertyMap", [0,0,1]],
                     ["cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, "PovertyMap", [0,1,1]]]

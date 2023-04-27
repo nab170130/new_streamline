@@ -1,4 +1,5 @@
 *.pyc
+*.png
 zdeleteme
 results
 not_as_old_results

@@ -25,8 +25,15 @@ if __name__ == "__main__":
         plotter = plots.OnePlotter(plotter_config)
     elif plotter_config["type"] == "row_plot":
         plotter = plots.RowPlotter(plotter_config)
+    elif plotter_config["type"] == "bar_plot":
+        plotter = plots.BarPlotter(plotter_config)
+    elif plotter_config["type"] == "std_table":
+        plotter = plots.STDTable(plotter_config)
+    elif plotter_config["type"] == "dist_plot":
+        plotter = plots.DistPlotter(plotter_config)
     else:
         raise ValueError("Invalid plot type")
-
+    
     plotter.produce_plot()
-    plt.savefig(plot_save_location)
+    if type(plotter) != plots.STDTable:
+        plt.savefig(plot_save_location)

@@ -31,7 +31,7 @@ class UnlimitedMemoryStreamlineDetection(StreamlineBaseDetection):
     def scg_select(self, data_sijs, data_private_sijs, private_private_sijs, budget):
 
         #Get hyperparameters from args dict
-        optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'NaiveGreedy'
+        optimizer = self.args['optimizer'] if 'optimizer' in self.args else 'LazyGreedy'
         nu = self.args['nu'] if 'nu' in self.args else 1
         stopIfZeroGain = self.args['stopIfZeroGain'] if 'stopIfZeroGain' in self.args else False
         stopIfNegativeGain = self.args['stopIfNegativeGain'] if 'stopIfNegativeGain' in self.args else False
@@ -95,11 +95,11 @@ class UnlimitedMemoryStreamlineDetection(StreamlineBaseDetection):
         # IF the task is the rare task, then apply the accumulated budget to the base budget.
         # Otherwise, adjust the budget to be fair to task sizes.
         num_tasks           = len(self.labeled_dataset.task_idx_partitions)
-        min_budget_factor   = 0.5
+        min_budget_factor   = self.args["min_budget"]
         if task_identity == num_tasks - 1:
             avg_task_size           = sum([len(x) for x in self.labeled_dataset.task_idx_partitions[:num_tasks - 1]]) // (num_tasks - 1)    # Avg size of non-rare tasks
             avg_task_size_diff      = avg_task_size - len(self.labeled_dataset.task_idx_partitions[task_identity])
-            oversample_budget       = max(min(self.args['acc_budget'], avg_task_size_diff - budget), 0)
+            oversample_budget       = int(max(min(self.args['acc_budget'], avg_task_size_diff - budget), 0))
             fair_adjusted_budget    = budget + oversample_budget
             self.args['acc_budget'] = self.args['acc_budget'] - oversample_budget
         else:

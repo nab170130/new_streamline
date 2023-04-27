@@ -14,6 +14,9 @@ class StreamlineBase(Strategy, ABC):
 
         super(StreamlineBase, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
         self.num_tasks = len(labeled_dataset.task_idx_partitions)
+
+        if "min_budget" not in args:
+            self.args["min_budget"] = 0.5
     
 
     def identify_task(self, full_sijs, metric='rbf'):
