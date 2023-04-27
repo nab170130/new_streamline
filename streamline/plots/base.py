@@ -111,6 +111,8 @@ class BasePlotter(ABC):
                 num_tasks=2
             elif train_dataset == "CityscapesRain":
                 num_tasks=2
+            elif train_dataset == "CityscapesFog":
+                num_tasks=2
             else:
                 raise ValueError("Dataset not implemented!")
             initial_seed_size = init_task_size * (num_tasks - 1) + (init_task_size // 5)

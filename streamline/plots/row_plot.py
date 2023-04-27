@@ -98,6 +98,8 @@ class RowPlotter(BasePlotter):
                 y_axis_avg = y_axis_avg[:conformed_length]
                 y_axis_std = y_axis_std[:conformed_length]
 
+                print(F"{eval_dataset}, {al_method}: {y_axis_avg}")
+
                 # Calculate y-metric fill arrays, which reflect 1 std away from the avg.
                 y_metric_below = y_axis_avg - y_axis_std
                 y_metric_above = y_axis_avg + y_axis_std
@@ -125,6 +127,8 @@ class RowPlotter(BasePlotter):
                         num_tasks=2
                     elif train_dataset == "CityscapesRain":
                         num_tasks=2
+                    elif train_dataset == "CityscapesFog":
+                        num_tasks=2
                     else:
                         raise ValueError("Dataset not implemented!")
                     num_rounds = len(x_axis_avg)
@@ -147,7 +151,7 @@ class RowPlotter(BasePlotter):
                 else:
 
                     line_for_legend = current_axis[row_num][col_num].plot(x_axis_avg, y_axis_avg, color=color, label=line_name, marker=point_style, linestyle=line_style)[0]
-                #current_axis[row_num][col_num].fill_between(x_axis_avg, y_metric_below, y_metric_above, color=color, label=line_name, alpha=0.3)
+                current_axis[row_num][col_num].fill_between(x_axis_avg, y_metric_below, y_metric_above, color=color, label=line_name, alpha=0.15)
 
                 if line_name not in self.line_mapping:
                     self.line_mapping[line_name] = line_for_legend

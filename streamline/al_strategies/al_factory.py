@@ -16,6 +16,7 @@ from .unlim_mem_streamline import UnlimitedMemoryStreamline
 from .unlim_mem_streamline_ablated_budget import UnlimitedMemoryStreamlineAblatedBudget
 from .unlim_mem_streamline_ablated_scg import UnlimitedMemoryStreamlineAblatedSCG
 from .unlim_mem_streamline_det import UnlimitedMemoryStreamlineDetection
+from .unlim_mem_streamline_repl_scg import UnlimitedMemoryStreamlineReplacedSCG
 
 
 class ALFactory:
@@ -102,6 +103,20 @@ class ALFactory:
                 self.al_params["oracle_task_identity"] = False
         elif al_name.startswith("ablated_scg_ulm_streamline"):
             strategy_class = UnlimitedMemoryStreamlineAblatedSCG
+            smi_function            = al_name.split("_")[4]
+            identification_metric   = al_name.split("_")[5]
+            obj_function            = al_name.split("_")[6]
+            selection_metric        = al_name.split("_")[7]
+            self.al_params["smi_function"]          = smi_function
+            self.al_params["identification_metric"] = identification_metric
+            self.al_params["obj_function"]          = obj_function
+            self.al_params["selection_metric"]      = selection_metric
+            if "oracle" in al_name:
+                self.al_params["oracle_task_identity"] = True
+            else:
+                self.al_params["oracle_task_identity"] = False
+        elif al_name.startswith("repl_scg_ulm_streamline"):
+            strategy_class = UnlimitedMemoryStreamlineReplacedSCG
             smi_function            = al_name.split("_")[4]
             identification_metric   = al_name.split("_")[5]
             obj_function            = al_name.split("_")[6]
