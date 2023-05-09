@@ -10,6 +10,8 @@ from .least_confidence_det import LeastConfidenceDetection
 from .margin_det import MarginDetection
 from .submod_det import SubmodularDet
 
+from .stream_similar import StreamSimilar
+
 from .lim_mem_streamline import LimitedMemoryStreamline
 from .lim_mem_streamline_det import LimitedMemoryStreamlineDetection
 from .unlim_mem_streamline import UnlimitedMemoryStreamline
@@ -167,6 +169,8 @@ class ALFactory:
             strategy_class = RandomSampling
         elif al_name.startswith("submodular"):
             strategy_class = SubmodularSampling
+        elif al_name.startswith("stream_similar"):
+            strategy_class = StreamSimilar
         else:
             raise ValueError(F"AL strategy {al_name} not supported")
             
