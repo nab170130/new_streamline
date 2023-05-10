@@ -22,10 +22,11 @@ class StreamSimilar(Strategy):
         
         # Utilize DISTIL's implementation of SIMILAR's SMI component. First, form the query set ALWAYS as the rare slice,
         # which by experiment design is the last slice.
-        rare_start_idx  = len(self.labeled_dataset) - len(self.labeled_dataset.task_idx_partitions[-1])
-        rare_end_idx    = len(self.labeled_dataset)
-        rare_query_set  = Subset(self.labeled_dataset, list(range(rare_start_idx, rare_end_idx)))
-        wrapped_similar = SMI(self.labeled_dataset, self.unlabeled_dataset, rare_query_set, self.model, self.target_classes, self.args)
+        self.args['smi_function']   = "fl2mi"
+        rare_start_idx              = len(self.labeled_dataset) - len(self.labeled_dataset.task_idx_partitions[-1])
+        rare_end_idx                = len(self.labeled_dataset)
+        rare_query_set              = Subset(self.labeled_dataset, list(range(rare_start_idx, rare_end_idx)))
+        wrapped_similar             = SMI(self.labeled_dataset, self.unlabeled_dataset, rare_query_set, self.model, self.target_classes, self.args)
 
         # Select new unlabeled indices to add using SMI.
         selected_unlabeled_idx = wrapped_similar.select(budget)
