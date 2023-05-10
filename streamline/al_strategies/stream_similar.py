@@ -1,4 +1,5 @@
-from distil.active_learning_strategies import SMI, Strategy
+from distil.active_learning_strategies import SMI
+from distil.active_learning_strategies.strategy import Strategy
 
 from distil.active_learning_strategies.strategy import Strategy
 from distil.utils.utils import LabeledToUnlabeledDataset
