@@ -137,11 +137,9 @@ class UnlimitedMemoryDetectionExperiment(Experiment):
             obj_det_config["seed"]          = 0
             al_params = {"device": self.gpu_name, "batch_size": obj_det_config["data"]["samples_per_gpu"], "buffer_capacity": replay_buffer_capacity, "cfg": obj_det_config}
 
-            # To prevent rampant overfitting, tune the min-budget factor depending on the dataset.
+            # Tune the min-budget factor depending on the dataset. FOR ABLATION EXPERIMENTS, CHANGE THIS TO 0.5.
             if train_dataset_name == "PovertyMap":
                 al_params["min_budget"] = 0.825
-            elif train_dataset_name == "BDD100K":
-                al_params["min_budget"] = 0.75
 
             if al_method_name.endswith("reservoir"):
                 for al_param in prev_al_params:

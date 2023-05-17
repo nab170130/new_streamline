@@ -9,6 +9,7 @@ from .entropy_det import EntropyDetection
 from .least_confidence_det import LeastConfidenceDetection
 from .margin_det import MarginDetection
 from .submod_det import SubmodularDet
+from .submod_det_img import SubmodularDetImage
 
 from .stream_similar import StreamSimilar
 
@@ -41,6 +42,8 @@ class ALFactory:
             strategy_class = LeastConfidenceDetection
         elif al_name.startswith("submodular_det"):
             strategy_class = SubmodularDet
+        elif al_name.startswith("submodular_det_img"):
+            strategy_class = SubmodularDetImage
         elif al_name.startswith("lm_streamline_det"):
             strategy_class = LimitedMemoryStreamlineDetection
             smi_function = al_name.split("_")[3]
