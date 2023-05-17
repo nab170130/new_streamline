@@ -6,15 +6,15 @@
     "title_font_size": 20,
     "x_axis_font_size": 20,
     "y_axis_font_size": 20,
-    "legend_font_size": 14,
-    "legend_col": 2,
+    "legend_font_size": 10,
+    "legend_col": 5,
     "gridspec_kw": {
         "wspace":   0.3,
         "top":      0.73,
         "bottom":   0.15
     },
     "plot_1_1": {
-        "db_loc": "zdeleteme/streamline_db.db",
+        "db_loc": "zdeleteme/streamline_db_icml.db",
         "x_axis_measure":   "labeled_instances",
         "y_axis_measure":   "per_task_accuracy_1",
         "x_axis_title":     "Labeled Instances",
@@ -27,6 +27,7 @@
         "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", [0.6, 0, 0], "o", "-", "Streamline"],
                         ["cross_entropy_sgd_rand_flips", "ablated_budget_ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", [0, 0.6, 0], "o", "-", "No budget"],
                         ["cross_entropy_sgd_rand_flips", "ablated_scg_ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", [0, 0, 0.6], "o", "-", "No scg"],
+                        ["cross_entropy_sgd_rand_flips", "repl_scg_ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", [0, 0.5, 1], "o", "-", "Repl scg"],
                         ["cross_entropy_sgd_rand_flips", "submodular", 500, 1000, 3000, "PovertyMap", [0.6, 0, 0.6], "o", "-", "Submodular"]]
     }
 }

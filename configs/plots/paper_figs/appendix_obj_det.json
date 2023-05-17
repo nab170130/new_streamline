@@ -26,7 +26,7 @@
                         ["obj_det_train", "entropy_det", 250, 500, 4000, "BDD100K", [0, 0.6, 0], "o", "-", "Entropy"],
                         ["obj_det_train", "margin_det", 250, 500, 4000, "BDD100K", [0, 0.6, 1], "o", "-", "Margin"],
                         ["obj_det_train", "least_confidence_det", 250, 500, 4000, "BDD100K", [0.6, 0.6, 0], "o", "-", "Least Conf."],
-                        ["obj_det_train", "submodular_det", 250, 500, 4000, "BDD100K", [0.6, 0, 0.6], "o", "-", "Submodular"],
+                        ["obj_det_train", "submodular_det_img", 250, 500, 4000, "BDD100K", [0.6, 0, 0.6], "o", "-", "Submodular"],
                         ["obj_det_train", "random", 250, 500, 4000, "BDD100K", [0,0,0], "o", "-", "Random"]]
     },
     "plot_1_2": {
@@ -44,7 +44,7 @@
                         ["obj_det_train", "entropy_det", 200, 400, 2000, "CityscapesRain", [0, 0.6, 0], "o", "-", "Entropy"],
                         ["obj_det_train", "margin_det", 200, 400, 2000, "CityscapesRain", [0, 0.6, 1], "o", "-", "Margin"],
                         ["obj_det_train", "least_confidence_det", 200, 400, 2000, "CityscapesRain", [0.6, 0.6, 0], "o", "-", "Least Conf."],
-                        ["obj_det_train", "submodular_det", 200, 400, 2000, "CityscapesRain", [0.6, 0, 0.6], "o", "-", "Submodular"],
+                        ["obj_det_train", "submodular_det_img", 200, 400, 2000, "CityscapesRain", [0.6, 0, 0.6], "o", "-", "Submodular"],
                         ["obj_det_train", "random", 200, 400, 2000, "CityscapesRain", [0,0,0], "o", "-", "Random"]]
     },
     "plot_1_3": {
@@ -62,7 +62,7 @@
                         ["obj_det_train", "entropy_det", 250, 500, 4000, "KITTIFog", [0, 0.6, 0], "o", "-", "Entropy"],
                         ["obj_det_train", "margin_det", 250, 500, 4000, "KITTIFog", [0, 0.6, 1], "o", "-", "Margin"],
                         ["obj_det_train", "least_confidence_det", 250, 500, 4000, "KITTIFog", [0.6, 0.6, 0], "o", "-", "Least Conf."],
-                        ["obj_det_train", "submodular_det", 250, 500, 4000, "KITTIFog", [0.6, 0, 0.6], "o", "-", "Submodular"],
+                        ["obj_det_train", "submodular_det_img", 250, 500, 4000, "KITTIFog", [0.6, 0, 0.6], "o", "-", "Submodular"],
                         ["obj_det_train", "random", 250, 500, 4000, "KITTIFog", [0,0,0], "o", "-", "Random"]]
     },
     "plot_2_1": {
@@ -80,7 +80,7 @@
                         ["obj_det_train", "entropy_det", 250, 500, 4000, "BDD100K", [0, 0.6, 0], "o", "-", "Entropy"],
                         ["obj_det_train", "margin_det", 250, 500, 4000, "BDD100K", [0, 0.6, 1], "o", "-", "Margin"],
                         ["obj_det_train", "least_confidence_det", 250, 500, 4000, "BDD100K", [0.6, 0.6, 0], "o", "-", "Least Conf."],
-                        ["obj_det_train", "submodular_det", 250, 500, 4000, "BDD100K", [0.6, 0, 0.6], "o", "-", "Submodular"],
+                        ["obj_det_train", "submodular_det_img", 250, 500, 4000, "BDD100K", [0.6, 0, 0.6], "o", "-", "Submodular"],
                         ["obj_det_train", "random", 250, 500, 4000, "BDD100K", [0,0,0], "o", "-", "Random"]]
     },
     "plot_2_2": {
@@ -98,7 +98,7 @@
                         ["obj_det_train", "entropy_det", 200, 400, 2000, "CityscapesRain", [0, 0.6, 0], "o", "-", "Entropy"],
                         ["obj_det_train", "margin_det", 200, 400, 2000, "CityscapesRain", [0, 0.6, 1], "o", "-", "Margin"],
                         ["obj_det_train", "least_confidence_det", 200, 400, 2000, "CityscapesRain", [0.6, 0.6, 0], "o", "-", "Least Conf."],
-                        ["obj_det_train", "submodular_det", 200, 400, 2000, "CityscapesRain", [0.6, 0, 0.6], "o", "-", "Submodular"],
+                        ["obj_det_train", "submodular_det_img", 200, 400, 2000, "CityscapesRain", [0.6, 0, 0.6], "o", "-", "Submodular"],
                         ["obj_det_train", "random", 200, 400, 2000, "CityscapesRain", [0,0,0], "o", "-", "Random"]]
     },
     "plot_2_3": {
@@ -116,7 +116,7 @@
                         ["obj_det_train", "entropy_det", 250, 500, 4000, "KITTIFog", [0, 0.6, 0], "o", "-", "Entropy"],
                         ["obj_det_train", "margin_det", 250, 500, 4000, "KITTIFog", [0, 0.6, 1], "o", "-", "Margin"],
                         ["obj_det_train", "least_confidence_det", 250, 500, 4000, "KITTIFog", [0.6, 0.6, 0], "o", "-", "Least Conf."],
-                        ["obj_det_train", "submodular_det", 250, 500, 4000, "KITTIFog", [0.6, 0, 0.6], "o", "-", "Submodular"],
+                        ["obj_det_train", "submodular_det_img", 250, 500, 4000, "KITTIFog", [0.6, 0, 0.6], "o", "-", "Submodular"],
                         ["obj_det_train", "random", 250, 500, 4000, "KITTIFog", [0,0,0], "o", "-", "Random"]]
     }
 }
