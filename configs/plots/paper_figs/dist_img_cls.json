@@ -1,0 +1,37 @@
+{
+    "name": "wilds_img_cls_dist",
+    "type": "dist_plot",
+    "figsize": [15, 10],
+    "font":             "sans_serif",
+    "title_font_size": 20,
+    "x_axis_font_size": 20,
+    "y_axis_font_size": 20,
+    "legend_font_size": 14,
+    "gridspec_kw": {
+        "wspace":   0.3,
+        "top":      0.9,
+        "bottom":   0.15
+    },
+    "plot_1": {
+        "db_loc": "zdeleteme/streamline_db.db",
+        "train_dataset": "PovertyMap",
+        "model_architecture": "resnet18_8c",
+        "limited_mem": 0,
+        "arrival_pattern": "rare_every_3",
+        "max_plot_points": 15,
+        "colors":      [[0.6,0,0],[0,0,1]],
+        "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 500, 1000, 3000, "PovertyMap", "o", "-", "Streamline"],
+                        ["cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, "PovertyMap", "o", "-", "Badge"]]
+    },
+    "plot_2": {
+        "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
+        "train_dataset": "IWildCam",
+        "model_architecture": "densenet161",
+        "limited_mem": 0,
+        "arrival_pattern": "sequential",
+        "max_plot_points": 15,
+        "colors":      [[0.6,0,0],[0,0,1],[0,0.6,0],[0.6,0,0.6]],
+        "experiments": [["cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_cosine", 250, 500, 4000, "IWildCam", "o", "-", "Streamline"],
+                        ["cross_entropy_sgd_rand_flips", "badge", 250, 500, 4000, "IWildCam", "o", "-", "Badge"]]
+    }
+}

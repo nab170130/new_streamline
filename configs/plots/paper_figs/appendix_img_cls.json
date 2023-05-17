@@ -28,7 +28,8 @@
                         ["cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, "PovertyMap", [0, 0.0, 1], "o", "-", "Badge"],
                         ["cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, "PovertyMap", [0, 0, 0], "o", "-", "Random"],
                         ["cross_entropy_sgd_rand_flips", "submodular", 500, 1000, 3000, "PovertyMap", [0.6, 0, 0.6], "o", "-", "Submodular"],
-                        ["cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, "PovertyMap", [0, 0.6, 0], "o", "-", "Entropy"]]
+                        ["cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, "PovertyMap", [0, 0.6, 0], "o", "-", "Entropy"],
+                        ["cross_entropy_sgd_rand_flips", "stream_similar", 500, 1000, 3000, "PovertyMap", [0.6, 0.6, 0], "o", "-", "Similar"]]
     },
     "plot_1_2": {
         "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
@@ -45,7 +46,8 @@
                         ["cross_entropy_sgd_rand_flips", "badge", 250, 500, 4000, "IWildCam", [0, 0.0, 1], "o", "-", "Badge"],
                         ["cross_entropy_sgd_rand_flips", "random", 250, 500, 4000, "IWildCam", [0, 0, 0], "o", "-", "Random"],
                         ["cross_entropy_sgd_rand_flips", "submodular", 250, 500, 4000, "IWildCam", [0.6, 0, 0.6], "o", "-", "Submodular"],
-                        ["cross_entropy_sgd_rand_flips", "entropy", 250, 500, 4000, "IWildCam", [0, 0.6, 0], "o", "-", "Entropy"]]
+                        ["cross_entropy_sgd_rand_flips", "entropy", 250, 500, 4000, "IWildCam", [0, 0.6, 0], "o", "-", "Entropy"],
+                        ["cross_entropy_sgd_rand_flips", "stream_similar", 250, 500, 4000, "IWildCam", [0.6, 0.6, 0], "o", "-", "Similar"]]
     },
     "plot_2_1": {
         "db_loc": "zdeleteme/streamline_db.db",
@@ -62,7 +64,8 @@
                         ["cross_entropy_sgd_rand_flips", "badge", 500, 1000, 3000, "PovertyMap", [0, 0.0, 1], "o", "-", "Badge"],
                         ["cross_entropy_sgd_rand_flips", "random", 500, 1000, 3000, "PovertyMap", [0, 0, 0], "o", "-", "Random"],
                         ["cross_entropy_sgd_rand_flips", "submodular", 500, 1000, 3000, "PovertyMap", [0.6, 0, 0.6], "o", "-", "Submodular"],
-                        ["cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, "PovertyMap", [0, 0.6, 0], "o", "-", "Entropy"]]
+                        ["cross_entropy_sgd_rand_flips", "entropy", 500, 1000, 3000, "PovertyMap", [0, 0.6, 0], "o", "-", "Entropy"],
+                        ["cross_entropy_sgd_rand_flips", "stream_similar", 500, 1000, 3000, "PovertyMap", [0.6, 0.6, 0], "o", "-", "Similar"]]
     },
     "plot_2_2": {
         "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
@@ -79,6 +82,7 @@
                         ["cross_entropy_sgd_rand_flips", "badge", 250, 500, 4000, "IWildCam", [0, 0.0, 1], "o", "-", "Badge"],
                         ["cross_entropy_sgd_rand_flips", "random", 250, 500, 4000, "IWildCam", [0, 0, 0], "o", "-", "Random"],
                         ["cross_entropy_sgd_rand_flips", "submodular", 250, 500, 4000, "IWildCam", [0.6, 0, 0.6], "o", "-", "Submodular"],
-                        ["cross_entropy_sgd_rand_flips", "entropy", 250, 500, 4000, "IWildCam", [0, 0.6, 0], "o", "-", "Entropy"]]
+                        ["cross_entropy_sgd_rand_flips", "entropy", 250, 500, 4000, "IWildCam", [0, 0.6, 0], "o", "-", "Entropy"],
+                        ["cross_entropy_sgd_rand_flips", "stream_similar", 250, 500, 4000, "IWildCam", [0.6, 0.6, 0], "o", "-", "Similar"]]
     }
 }

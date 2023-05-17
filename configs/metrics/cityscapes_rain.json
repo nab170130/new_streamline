@@ -1,0 +1,15 @@
+{
+    "gpus": ["cuda:0", "cuda:1"],
+    "batch_size": 32,
+    "dataset_directory": "/scratch4/snk170001/streamline/data",
+    "db_loc": "/scratch4/snk170001/streamline/not_as_old_results/streamline_db_icml.db",
+    "base_exp_directory": "/scratch4/snk170001/streamline/not_as_old_results/large_objects/",
+    "distil_directory": "../distil",
+    "metrics": [["CityscapesRain", "mAP", "CityscapesRain"],
+                ["CityscapesRain", "per_task_mAP_0", "CityscapesRain"],
+                ["CityscapesRain", "per_task_mAP_1", "CityscapesRain"],
+                ["CityscapesRain", "labeled_instances", "CityscapesRain"],
+                ["CityscapesRain", "task_identification_accuracy", "CityscapesRain"],
+                ["CityscapesRain", "task_presence_0", "CityscapesRain"],
+                ["CityscapesRain", "task_presence_1", "CityscapesRain"]]
+}

@@ -9,6 +9,9 @@ from .entropy_det import EntropyDetection
 from .least_confidence_det import LeastConfidenceDetection
 from .margin_det import MarginDetection
 from .submod_det import SubmodularDet
+from .submod_det_img import SubmodularDetImage
+
+from .stream_similar import StreamSimilar
 
 from .lim_mem_streamline import LimitedMemoryStreamline
 from .lim_mem_streamline_det import LimitedMemoryStreamlineDetection
@@ -16,6 +19,7 @@ from .unlim_mem_streamline import UnlimitedMemoryStreamline
 from .unlim_mem_streamline_ablated_budget import UnlimitedMemoryStreamlineAblatedBudget
 from .unlim_mem_streamline_ablated_scg import UnlimitedMemoryStreamlineAblatedSCG
 from .unlim_mem_streamline_det import UnlimitedMemoryStreamlineDetection
+from .unlim_mem_streamline_repl_scg import UnlimitedMemoryStreamlineReplacedSCG
 
 
 class ALFactory:
@@ -38,6 +42,8 @@ class ALFactory:
             strategy_class = LeastConfidenceDetection
         elif al_name.startswith("submodular_det"):
             strategy_class = SubmodularDet
+        elif al_name.startswith("submodular_det_img"):
+            strategy_class = SubmodularDetImage
         elif al_name.startswith("lm_streamline_det"):
             strategy_class = LimitedMemoryStreamlineDetection
             smi_function = al_name.split("_")[3]
@@ -114,6 +120,20 @@ class ALFactory:
                 self.al_params["oracle_task_identity"] = True
             else:
                 self.al_params["oracle_task_identity"] = False
+        elif al_name.startswith("repl_scg_ulm_streamline"):
+            strategy_class = UnlimitedMemoryStreamlineReplacedSCG
+            smi_function            = al_name.split("_")[4]
+            identification_metric   = al_name.split("_")[5]
+            obj_function            = al_name.split("_")[6]
+            selection_metric        = al_name.split("_")[7]
+            self.al_params["smi_function"]          = smi_function
+            self.al_params["identification_metric"] = identification_metric
+            self.al_params["obj_function"]          = obj_function
+            self.al_params["selection_metric"]      = selection_metric
+            if "oracle" in al_name:
+                self.al_params["oracle_task_identity"] = True
+            else:
+                self.al_params["oracle_task_identity"] = False
         elif al_name.startswith("badge"):
 
             # BADGE relies on last-layer gradients, which can be large for some dataset/model combos.
@@ -152,6 +172,8 @@ class ALFactory:
             strategy_class = RandomSampling
         elif al_name.startswith("submodular"):
             strategy_class = SubmodularSampling
+        elif al_name.startswith("stream_similar"):
+            strategy_class = StreamSimilar
         else:
             raise ValueError(F"AL strategy {al_name} not supported")
             

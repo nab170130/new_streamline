@@ -24,16 +24,8 @@
                     ["IWildCam", "densenet161", 0, "sequential", 1, "cross_entropy_sgd_rand_flips", "submodular", 250, 500, 4000, 32, 9, 1],
                     ["IWildCam", "densenet161", 0, "sequential", 2, "cross_entropy_sgd_rand_flips", "submodular", 250, 500, 4000, 32, 9, 1],
                     ["IWildCam", "densenet161", 0, "sequential", 3, "cross_entropy_sgd_rand_flips", "submodular", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 0, "cross_entropy_sgd_rand_flips", "ulm_streamline_gcmi_rbf_flcg_cosine", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 1, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 2, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_rbf", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 3, "cross_entropy_sgd_rand_flips", "ulm_streamline_gcmi_rbf_flcg_cosine", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 0, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 1, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_rbf", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 2, "cross_entropy_sgd_rand_flips", "ulm_streamline_gcmi_rbf_flcg_cosine", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 3, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 0, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_rbf", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 1, "cross_entropy_sgd_rand_flips", "ulm_streamline_gcmi_rbf_flcg_cosine", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 2, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_cosine_flcg_cosine", 250, 500, 4000, 32, 9, 1],
-                    ["IWildCam", "densenet161", 0, "sequential", 3, "cross_entropy_sgd_rand_flips", "ulm_streamline_fl2mi_rbf_flcg_rbf", 250, 500, 4000, 32, 9, 1]]
+                    ["IWildCam", "densenet161", 0, "sequential", 0, "cross_entropy_sgd_rand_flips", "stream_similar", 250, 500, 4000, 32, 9, 1],
+                    ["IWildCam", "densenet161", 0, "sequential", 1, "cross_entropy_sgd_rand_flips", "stream_similar", 250, 500, 4000, 32, 9, 1],
+                    ["IWildCam", "densenet161", 0, "sequential", 2, "cross_entropy_sgd_rand_flips", "stream_similar", 250, 500, 4000, 32, 9, 1],
+                    ["IWildCam", "densenet161", 0, "sequential", 3, "cross_entropy_sgd_rand_flips", "stream_similar", 250, 500, 4000, 32, 9, 1]]
 }

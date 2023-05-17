@@ -15,7 +15,7 @@
     "plot_1_1": {
         "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
         "x_axis_measure":   "labeled_instances",
-        "y_axis_measure":   "per_task_mAP_1",
+        "y_axis_measure":   "mAP",
         "x_axis_title":     "Labeled Instances",
         "y_axis_title":     "Rare Slice mAP",
         "train_dataset": "BDD100K",
@@ -33,7 +33,7 @@
     "plot_1_2": {
         "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
         "x_axis_measure":   "labeled_instances",
-        "y_axis_measure":   "per_task_mAP_1",
+        "y_axis_measure":   "mAP",
         "x_axis_title":     "Labeled Instances",
         "y_axis_title":     "Rare Slice mAP",
         "train_dataset": "CityscapesRain",
@@ -51,7 +51,7 @@
     "plot_1_3": {
         "db_loc": "from_eng_ml_03/streamline_db_eng_ml_03.db",
         "x_axis_measure":   "labeled_instances",
-        "y_axis_measure":   "per_task_mAP_1",
+        "y_axis_measure":   "mAP",
         "x_axis_title":     "Labeled Instances",
         "y_axis_title":     "Rare Slice mAP",
         "train_dataset": "KITTIFog",

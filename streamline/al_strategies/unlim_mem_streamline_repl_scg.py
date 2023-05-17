@@ -1,13 +1,14 @@
 from .streamline_base import StreamlineBase
+from distil.active_learning_strategies import BADGE
 
 import numpy as np
 import submodlib
 
-class UnlimitedMemoryStreamlineAblatedSCG(StreamlineBase):
+class UnlimitedMemoryStreamlineReplacedSCG(StreamlineBase):
 
     def __init__(self, labeled_dataset, unlabeled_dataset, net, nclasses, args={}):
 
-        super(UnlimitedMemoryStreamlineAblatedSCG, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
+        super(UnlimitedMemoryStreamlineReplacedSCG, self).__init__(labeled_dataset, unlabeled_dataset, net, nclasses, args)
     
 
     def calculate_subkernels(self, full_sijs, task_identity):
@@ -58,9 +59,9 @@ class UnlimitedMemoryStreamlineAblatedSCG(StreamlineBase):
             leftover_budget         = budget - fair_adjusted_budget
             self.args['acc_budget'] = self.args['acc_budget'] + leftover_budget
 
-        # Ignore the SCG component and instead select randomly.
-        rand_idx = np.random.permutation(len(self.unlabeled_dataset))[:fair_adjusted_budget]
-        selected_unlabeled_idx = rand_idx.tolist()
+        # Ignore the SCG component and instead select using BADGE. Go ahead and delete full_sijs to make room for BADGE.
+        proxy_strategy          = BADGE(self.labeled_dataset, self.unlabeled_dataset, self.model, self.target_classes, self.args)
+        selected_unlabeled_idx  = proxy_strategy.select(fair_adjusted_budget)
         selected_unlabeled_idx_partitioned = [[] for x in range(self.num_tasks)]
         selected_unlabeled_idx_partitioned[task_identity].extend(selected_unlabeled_idx)
 

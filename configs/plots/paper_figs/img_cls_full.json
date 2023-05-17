@@ -15,7 +15,7 @@
     "plot_1_1": {
         "db_loc": "zdeleteme/streamline_db.db",
         "x_axis_measure":   "labeled_instances",
-        "y_axis_measure":   "per_task_accuracy_1",
+        "y_axis_measure":   "accuracy",
         "x_axis_title":     "Labeled Instances",
         "y_axis_title":     "Rare Slice Accuracy",
         "train_dataset": "PovertyMap",
@@ -33,7 +33,7 @@
     "plot_1_2": {
         "db_loc": "from_eng_ml_03_old/streamline_db_eng_ml_03.db",
         "x_axis_measure":   "labeled_instances",
-        "y_axis_measure":   "per_task_accuracy_1",
+        "y_axis_measure":   "accuracy",
         "x_axis_title":     "Labeled Instances",
         "y_axis_title":     "Rare Slice Accuracy",
         "train_dataset": "IWildCam",
