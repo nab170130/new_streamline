@@ -173,6 +173,6 @@ Finally, plots can be generated using the following:
 python plotter.py configs/plots/*
 ```
 
-## Note about Experiments
+## Note about Experiments and Ablation
 
-In general, we provide the full list of experiments ran in the config files of this repository -- only the directories within them need to be changed to match the target system that will execute the experiments.
+In general, we provide the full list of experiments ran in the config files of this repository -- only the directories within them need to be changed to match the target system that will execute the experiments. To run the ablation variant of PovertyMap, change the `min_acc_budget` setting in [`unlim_memory_experiment.py`](streamline/experiments/unlim_memory_experiment.py) to `0.5` as mentioned in the paper.
