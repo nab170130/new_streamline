@@ -12,6 +12,7 @@ from .submod_det import SubmodularDet
 from .submod_det_img import SubmodularDetImage
 
 from .stream_similar import StreamSimilar
+from .talisman import Talisman
 
 from .lim_mem_streamline import LimitedMemoryStreamline
 from .lim_mem_streamline_det import LimitedMemoryStreamlineDetection
@@ -174,6 +175,8 @@ class ALFactory:
             strategy_class = SubmodularSampling
         elif al_name.startswith("stream_similar"):
             strategy_class = StreamSimilar
+        elif al_name.startswith("talisman"):
+            strategy_class = Talisman
         else:
             raise ValueError(F"AL strategy {al_name} not supported")
             
